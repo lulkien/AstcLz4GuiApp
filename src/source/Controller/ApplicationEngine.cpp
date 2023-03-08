@@ -1,6 +1,6 @@
 #include "ApplicationEngine.h"
-#include "ImageCompressor.h"
 #include "Common.h"
+#include "ApplicationModel.h"
 
 #include <QQmlContext>
 #include <QDir>
@@ -8,7 +8,6 @@
 #include <QDirIterator>
 
 ApplicationEngine::ApplicationEngine()
-    : m_processThread { new QThread }
 {
     INFO;
     m_username = getCurrentUser();
@@ -16,15 +15,20 @@ ApplicationEngine::ApplicationEngine()
     initQmlcontext();
     initConnection();
 
-    m_processWorker.moveToThread(m_processThread);
-    m_processThread->start();
+    m_processWorker.moveToThread(&m_processThread);
+    m_processThread.start();
 }
 
 ApplicationEngine::~ApplicationEngine()
 {
     INFO;
-    m_processThread->quit();
-    m_processThread->wait();
+    if (MODEL.isProcessing())
+    {
+        WARN << "Terminate image processor";
+        m_processThread.requestInterruption();
+    }
+    m_processThread.quit();
+    m_processThread.wait();
 }
 
 void ApplicationEngine::startApplication()
@@ -52,8 +56,8 @@ void ApplicationEngine::initConnection()
             this, &ApplicationEngine::onSourcePathChanged);
     connect(this, &ApplicationEngine::requestStartProcessImages,
             &m_processWorker, &ProcessWorker::onStartProcessImages, Qt::QueuedConnection);
-    connect(m_processThread, &QThread::finished,
-            m_processThread, &QThread::deleteLater);
+    connect(&m_processThread, &QThread::finished,
+            &m_processThread, &QThread::deleteLater);
 }
 
 void ApplicationEngine::loadImages()

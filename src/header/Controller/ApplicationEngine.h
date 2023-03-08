@@ -5,9 +5,7 @@
 #include <QObject>
 #include <QThread>
 #include <QQmlApplicationEngine>
-#include "ApplicationModel.h"
 #include "ProcessWorker.h"
-#include "Settings.h"
 #include "Events.h"
 
 class ApplicationEngine : public QQmlApplicationEngine
@@ -32,6 +30,7 @@ private:
     QStringList scanAllPngFromDirectory(const QString &dir);
     QString getCurrentUser();
 
+
 private slots:
     void onReceivedEvent(int eventId, QByteArray data);
     void onSourcePathChanged();
@@ -42,7 +41,7 @@ signals:
 private:
     Events m_eventHandler;
     QString m_username;
-    QThread *m_processThread;
+    QThread m_processThread;
     ProcessWorker m_processWorker;
 };
 

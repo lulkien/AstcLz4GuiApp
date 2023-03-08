@@ -5,10 +5,12 @@
 
 #include <QFileInfo>
 #include <QProcess>
+#include <QThread>
 #include <lz4.h>
 
 ImageCompressor::ImageCompressor(const QString &pngFileName)
     : m_pngFileName     { pngFileName }
+    , m_isTerminated    { false }
 {
     INFO << "Construct an ImageProcessor <" << pngFileName;
 }
@@ -39,7 +41,7 @@ bool ImageCompressor::startProcess()
     {
         if (!runAstcEncoder(normalizedFileName, astcFilename))
         {
-            WARN << "Cannot run ASTCENC for image:" << normalizedFileName;
+            WARN << QString("Cannot run ASTCENC for image: \"%1\" or process is terminated").arg(normalizedFileName);
             return false;
         }
     }
@@ -153,8 +155,27 @@ bool ImageCompressor::convert_png_to_premult_bitmap(const QString &pngFileName, 
                                            << STR_LITERAL("( +clone -alpha Extract ) -channel RGB -compose Multiply -composite")
                                            << bmpFileName;
 
-    INFO << "Running " << IMAGE_MAGICK_PATH << "with arguments" << args;
-    if (QProcess::execute(IMAGE_MAGICK_PATH, args) != 0)
+    INFO << "Running " << IMAGE_MAGICK << "with arguments" << args;
+    m_process.start(IMAGE_MAGICK, args);
+
+    //Wake up every 100ms and check if we must exit
+    while(!m_process.waitForFinished(100))
+    {
+        if (QThread::currentThread()->isInterruptionRequested())
+        {
+            WARN << "TERMINATE" << ASTCENCODER;
+            m_process.terminate();
+            if (!m_process.waitForFinished(1000))
+            {
+                WARN << "KILL" << ASTCENCODER;
+                m_process.kill();
+            }
+            m_isTerminated = true;
+            return false;
+        }
+    }
+
+    if (m_process.exitCode() != 0)
     {
         WARN << "Error converting to BMP premultiplied";
         return false;
@@ -231,10 +252,28 @@ bool ImageCompressor::runAstcEncoder(const QString &normalizedFileName, const QS
                                                << speed
                                                << STR_LITERAL("-silentmode");
 
-        INFO << "Running" << ASTCENC_PATH << "with arguments" << args;
-        if (QProcess::execute(ASTCENC_PATH, args) != 0)
+        INFO << "Running" << ASTCENCODER << "with arguments" << args;
+        m_process.start(ASTCENCODER, args);
+
+        while(!m_process.waitForFinished(100)) //Wake up every 100ms and check if we must exit
         {
-            WARN << "Cannot start " << ASTCENC_PATH;
+            if (QThread::currentThread()->isInterruptionRequested())
+            {
+                WARN << "TERMINATE" << ASTCENCODER;
+                m_process.terminate();
+                if (!m_process.waitForFinished(1000))
+                {
+                    WARN << "KILL" << ASTCENCODER;
+                    m_process.kill();
+                }
+                m_isTerminated = true;
+                return false;
+            }
+        }
+
+        if (m_process.exitCode() != 0)
+        {
+            WARN << "Cannot start " << ASTCENCODER;
             return false;
         }
 
@@ -374,6 +413,7 @@ bool ImageCompressor::runLz4Compress(const QString &astcFileName)
     if (!outputFile.open(QFile::WriteOnly))
     {
         WARN << "Cannot open file" << lz4FileName << "to write";
+        delete[] outputBuffer;
         return false;
     }
     outputFile.write(ENCODED_HEADER, ENCODED_HEADER_LEN);

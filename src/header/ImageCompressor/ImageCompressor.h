@@ -3,12 +3,14 @@
 
 #include <QString>
 #include <QImage>
+#include <QProcess>
 
 class ImageCompressor
 {
 public:
     ImageCompressor(const QString& pngFileName);
     bool startProcess();
+    bool isTerminated() const { return m_isTerminated; }
 
 private:
 
@@ -35,6 +37,8 @@ private:
 
 private:
     const QString m_pngFileName;
+    QProcess m_process;
+    bool m_isTerminated;
 };
 
 #endif // IMAGECOMPRESSOR_H

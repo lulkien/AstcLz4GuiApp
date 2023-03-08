@@ -48,6 +48,25 @@ Item {
 //                AppModel.sourcePath = privateProperties.inputPath
             }
         }
+
+        Text {
+            id: guideText
+            visible: textInput.text.length === 0
+            anchors {
+                verticalCenter: textBox.verticalCenter
+                left: textInput.left
+            }
+            text: "Paste a valid path here or click Open button..."
+            color: "#a9a9a9"
+        }
+
+        Timer {
+            id: textInputUpdateTimer
+            interval: 250
+            onTriggered: {
+                AppModel.sourcePath = privateProperties.inputPath
+            }
+        }
     }
 
     Item {
@@ -66,7 +85,7 @@ Item {
             width: privateProperties.globalButtonSize
             height: privateProperties.globalButtonSize
             isEnabled: privateProperties.allowScan
-            label: "Load Images"
+            label: privateProperties.inputPath.length === 0 ? "Open" : "Load"
             onClicked: {
                 EventHandler.qmlSendEvent(QmlEvents.REQ_LOAD_IMAGES)
             }
@@ -119,11 +138,21 @@ Item {
         }
     }
 
-    Timer {
-        id: textInputUpdateTimer
-        interval: 250
-        onTriggered: {
-            AppModel.sourcePath = privateProperties.inputPath
+    Rectangle {
+        id: log_area
+        anchors {
+            top: buttons_area.bottom
+            topMargin: privateProperties.globalMargins
+            left: parent.left
+            leftMargin: privateProperties.globalMargins
         }
+
+        width: parent.width - 2 * privateProperties.globalMargins
+        height: parent.height - textBox.height - buttons_area.height - 4 * privateProperties.globalMargins
+        border.color: "black"
+    }
+
+    Component.onCompleted: {
+        textInput.text = "/home/ark/Pictures/test"
     }
 }

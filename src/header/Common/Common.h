@@ -11,17 +11,29 @@
 #define STR_TO_STREF(str)       (QStringRef(&str))
 #define STR_LITERAL(str)        QLatin1String(str)
 
-#define IMAGE_MAGICK_PATH   QLatin1String("/usr/local/astc_lz4_tools/convert")
-#define ASTCENC_PATH        QLatin1String("/usr/local/astc_lz4_tools/astcenc")
+#define IMAGE_MAGICK        QLatin1String("/usr/local/astc_lz4_tools/convert")
+#define ASTCENCODER         QLatin1String("/usr/local/astc_lz4_tools/astcenc")
 
 #define ENCODED_HEADER      "\tLZ_ENJOYTOOLS\t"
 #define ENCODED_HEADER_LEN  15
 
 #define ASTCENC_HEADER_LENGTH   16
 
-// process direction
-#define RETURN_SUCCESS   1
-#define RETURN_FAILURE   -1
-#define RETURN_IGNORE 0
+// function direction
+#define RETURN_SUCCESS  1
+#define RETURN_FAILURE  -1
+#define RETURN_IGNORE   0
+
+enum function_flow_ctrl {
+    f_ignore    = -1,
+    f_success   = 0,
+    f_failure   = 1,
+};
+
+enum process_flow_ctrl {
+    p_terminated    = -1,
+    p_success       = 0,
+    p_failure       = 1,
+};
 
 #endif // COMMON_H

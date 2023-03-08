@@ -1,7 +1,7 @@
 #include "ProcessWorker.h"
 #include "Common.h"
-#include "ImageCompressor.h"
 #include "ApplicationModel.h"
+#include "ImageCompressor.h"
 
 ProcessWorker::ProcessWorker()
 {
@@ -24,6 +24,11 @@ void ProcessWorker::onStartProcessImages()
                 MODEL.setSuccessCount(MODEL.successCount() + 1);
             else
                 MODEL.setFailureCount(MODEL.failureCount() + 1);
+            if (process.isTerminated())
+            {
+                WARN << "Process is terminated";
+                return;
+            }
         }
     }
     INFO << "Done.";

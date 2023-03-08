@@ -14,6 +14,8 @@ public slots:
 
 signals:
 
+private:
+
 };
 
 #endif // PROCESSWORKER_H
