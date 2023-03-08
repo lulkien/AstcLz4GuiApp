@@ -9,7 +9,7 @@ ProcessWorker::ProcessWorker()
 
 void ProcessWorker::onStartProcessImages()
 {
-    INFO << "Use another thread";
+    INFO << "Use another thread to compress";
     MODEL.setSuccessCount(0);
     MODEL.setFailureCount(0);
     MODEL.setIsProcessing(true);
@@ -19,7 +19,7 @@ void ProcessWorker::onStartProcessImages()
         for (QString file : MODEL.listFiles())
         {
             ImageCompressor process(file);
-            bool result = process.startProcess();
+            bool result = process.compress();
             if (result)
                 MODEL.setSuccessCount(MODEL.successCount() + 1);
             else
@@ -31,6 +31,5 @@ void ProcessWorker::onStartProcessImages()
             }
         }
     }
-    INFO << "Done.";
     MODEL.setIsProcessing(false);
 }

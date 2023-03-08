@@ -8,12 +8,12 @@ class Utilities
 public:
     Utilities();
 
-    static bool removeFile(QStringRef fileNameRef);
-    static QString hdrFileName(QStringRef astcFilename);
-    static QString gzFileName(QStringRef astcFilename);
-    static QString lz4FileName(QStringRef astcFilename);
-    static QString astcFileName(QStringRef pngFilename);
-    static QString backupAstcFileName(QStringRef astcFilename);
+    static bool removeFile(const QString &fileNameRef);
+    static QString hdrFileName(const QString &astcFilename);
+    static QString gzFileName(const QString &astcFilename);
+    static QString lz4FileName(const QString &astcFilename);
+    static QString astcFileName(const QString &pngFilename);
+    static QString backupAstcFileName(const QString &astcFilename);
 };
 
 #endif // UTILITIES_H

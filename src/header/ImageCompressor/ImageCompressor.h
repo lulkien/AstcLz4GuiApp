@@ -10,7 +10,7 @@ class ImageCompressor
 {
 public:
     ImageCompressor(const QString& pngFileName);
-    bool startProcess();
+    bool compress();
     bool isTerminated() const { return m_isTerminated; }
 
 private:

@@ -12,10 +12,10 @@ ImageCompressor::ImageCompressor(const QString &pngFileName)
     : m_pngFileName     { pngFileName }
     , m_isTerminated    { false }
 {
-    INFO << "Construct an ImageProcessor <" << pngFileName;
+    INFO << "Construct an ImageProcessor:" << pngFileName;
 }
 
-bool ImageCompressor::startProcess()
+bool ImageCompressor::compress()
 {
     QFileInfo info(m_pngFileName);
     if (!info.exists())
@@ -32,7 +32,7 @@ bool ImageCompressor::startProcess()
 
     const QString normalizedFileName = QString("%1/%2.normalized.png")
             .arg(info.absolutePath(), info.completeBaseName());
-    const QString astcFilename = Utilities::astcFileName(STR_TO_STREF(m_pngFileName));
+    const QString astcFilename = Utilities::astcFileName(m_pngFileName);
 
     if (!createNormalizedImage(normalizedFileName, astcFilename))
         return false;
@@ -92,14 +92,14 @@ bool ImageCompressor::createNormalizedImage(const QString &normalizedFileName, c
     }
 
     // normalized png was regenerated, remove astc and .gz
-    const QString headerFileName = Utilities::hdrFileName(STR_TO_STREF(astcFileName));
-    const QString gzFileName = Utilities::gzFileName(STR_TO_STREF(astcFileName));
-    const QString lz4FileName = Utilities::lz4FileName(STR_TO_STREF(astcFileName));
+    const QString headerFileName = Utilities::hdrFileName(astcFileName);
+    const QString gzFileName = Utilities::gzFileName(astcFileName);
+    const QString lz4FileName = Utilities::lz4FileName(astcFileName);
 
-    bool removeStatus = (Utilities::removeFile(STR_TO_STREF(headerFileName))
-                         && Utilities::removeFile(STR_TO_STREF(gzFileName))
-                         && Utilities::removeFile(STR_TO_STREF(lz4FileName))
-                         && Utilities::removeFile(STR_TO_STREF(astcFileName)));
+    bool removeStatus = (Utilities::removeFile(headerFileName)
+                         && Utilities::removeFile(gzFileName)
+                         && Utilities::removeFile(lz4FileName)
+                         && Utilities::removeFile(astcFileName));
     if (!removeStatus)
         return false;
 
@@ -121,7 +121,7 @@ bool ImageCompressor::exportImage(const QImage &image, const QString &exportFile
         return false;
     }
 
-    if (!Utilities::removeFile(STR_TO_STREF(exportFileName)))
+    if (!Utilities::removeFile(exportFileName))
         return false;
 
     if (!image.save(exportFileName, "png"))
@@ -133,13 +133,16 @@ bool ImageCompressor::exportImage(const QImage &image, const QString &exportFile
             return false;
     }
 
-    INFO << "Exported image" << exportFileName;
+    INFO << "-->" << exportFileName;
     return true;
 }
 
 bool ImageCompressor::premultiplyImage(const QString &fileName)
 {
-    const QString bmpFilename = fileName + STR_LITERAL(".bmp");
+    INFO << fileName;
+    QFileInfo info(fileName);
+    const QString bmpFilename = QString("%1/%2.bmp")
+            .arg(info.absolutePath(), info.completeBaseName());
 
     process_flow_ctrl _status = convert_png_to_premult_bitmap(fileName, bmpFilename);
     switch (_status) {
@@ -166,12 +169,20 @@ process_flow_ctrl ImageCompressor::convert_png_to_premult_bitmap(const QString &
         WARN << "Invalid PNG of BMP filename:" << pngFileName << bmpFileName;
         return p_failure;
     }
-
-    const QStringList args = QStringList() << pngFileName
-                                           << STR_LITERAL("( +clone -alpha Extract ) -channel RGB -compose Multiply -composite")
-                                           << bmpFileName;
-
-    INFO << "Running " << IMAGE_MAGICK << "with arguments" << args;
+    Utilities::removeFile(bmpFileName);
+    QStringList args = QStringList() << pngFileName
+                                     << QString("(")
+                                     << QString("+clone")
+                                     << QString("-alpha")
+                                     << QString("Extract")
+                                     << QString(")")
+                                     << QString("-channel")
+                                     << QString("RGB")
+                                     << QString("-compose")
+                                     << QString("multiply")
+                                     << QString("-composite")
+                                     << bmpFileName;
+    DEBUG << "Running" << IMAGE_MAGICK << "with" << args;
     m_process.start(IMAGE_MAGICK, args);
 
     //Wake up every 100ms and check if we must exit
@@ -179,11 +190,11 @@ process_flow_ctrl ImageCompressor::convert_png_to_premult_bitmap(const QString &
     {
         if (QThread::currentThread()->isInterruptionRequested())
         {
-            WARN << "TERMINATE" << ASTCENCODER;
+            WARN << "TERMINATE" << IMAGE_MAGICK;
             m_process.terminate();
             if (!m_process.waitForFinished(1000))
             {
-                WARN << "KILL" << ASTCENCODER;
+                WARN << "KILL" << IMAGE_MAGICK;
                 m_process.kill();
             }
             m_isTerminated = true;
@@ -197,6 +208,7 @@ process_flow_ctrl ImageCompressor::convert_png_to_premult_bitmap(const QString &
         return p_failure;
     }
 
+    INFO << "--> Done";
     return p_success;
 }
 
@@ -225,7 +237,7 @@ bool ImageCompressor::convert_premult_bitmap_to_png(const QString &bmpFileName, 
 
 process_flow_ctrl ImageCompressor::runAstcEncoder(const QString &normalizedFileName, const QString &astcFileName)
 {
-    const QString backupAstcFileName = Utilities::backupAstcFileName(STR_TO_STREF(astcFileName));
+    const QString backupAstcFileName = Utilities::backupAstcFileName(astcFileName);
     bool useBackupAstc = false;
     if (SETTINGS.keep())
     {
@@ -252,24 +264,24 @@ process_flow_ctrl ImageCompressor::runAstcEncoder(const QString &normalizedFileN
     }
 
     // old gz/lz4/header file name
-    const QString headerFileName = Utilities::hdrFileName(STR_TO_STREF(astcFileName));
-    const QString gzFileName = Utilities::gzFileName(STR_TO_STREF(astcFileName));
-    const QString lz4FileName = Utilities::lz4FileName(STR_TO_STREF(astcFileName));
+    const QString headerFileName = Utilities::hdrFileName(astcFileName);
+    const QString gzFileName = Utilities::gzFileName(astcFileName);
+    const QString lz4FileName = Utilities::lz4FileName(astcFileName);
 
     // If not use backup file -> gen astc file from png
     if (!useBackupAstc)
     {
-        const QString speed = (SETTINGS.veryfast() ? STR_LITERAL("-veryfast")
-                                                   : STR_LITERAL("-medium"));
+        const QString speed = (SETTINGS.veryfast() ? QString("-veryfast")
+                                                   : QString("-medium"));
 
-        const QStringList args = QStringList() << STR_LITERAL("-c")
+        const QStringList args = QStringList() << QString("-c")
                                                << normalizedFileName
                                                << astcFileName
-                                               << STR_LITERAL("4x4")
+                                               << QString("4x4")
                                                << speed
-                                               << STR_LITERAL("-silentmode");
+                                               << QString("-silentmode");
 
-        INFO << "Running" << ASTCENCODER << "with arguments" << args;
+        DEBUG << "Running" << ASTCENCODER << "with arguments" << args;
         m_process.start(ASTCENCODER, args);
 
         while(!m_process.waitForFinished(100)) //Wake up every 100ms and check if we must exit
@@ -298,9 +310,9 @@ process_flow_ctrl ImageCompressor::runAstcEncoder(const QString &normalizedFileN
         if (SETTINGS.backupAstc())
             backupAstcFile(astcFileName, backupAstcFileName);
 
-        bool removeStatus = (Utilities::removeFile(STR_TO_STREF(headerFileName))
-                             && Utilities::removeFile(STR_TO_STREF(gzFileName))
-                             && Utilities::removeFile(STR_TO_STREF(lz4FileName)));
+        bool removeStatus = (Utilities::removeFile(headerFileName)
+                             && Utilities::removeFile(gzFileName)
+                             && Utilities::removeFile(lz4FileName));
         if (!removeStatus)
             return p_failure;
     }
@@ -341,7 +353,7 @@ process_flow_ctrl ImageCompressor::runAstcEncoder(const QString &normalizedFileN
     }
     astcFile.close();
 
-    INFO << "Success";
+    INFO << "--> Done";
     return p_success;
 
 }
@@ -368,7 +380,7 @@ function_flow_ctrl ImageCompressor::retrieveAstcFromBackup(const QString &backup
 void ImageCompressor::backupAstcFile(const QString &astcFileName, const QString &backupAstcFileName)
 {
     QFile astcFile(astcFileName);
-    Utilities::removeFile(STR_TO_STREF(backupAstcFileName));
+    Utilities::removeFile(backupAstcFileName);
     if (!astcFile.copy(backupAstcFileName))
         WARN << "Cannot backup ASTC file." << astcFileName;
     else
@@ -384,8 +396,8 @@ bool ImageCompressor::runLz4Compress(const QString &astcFileName)
         return false;
     }
 
-    const QString lz4FileName = Utilities::lz4FileName(STR_TO_STREF(astcFileName));
-    Utilities::removeFile(STR_TO_STREF(lz4FileName));
+    const QString lz4FileName = Utilities::lz4FileName(astcFileName);
+    Utilities::removeFile(lz4FileName);
 
 #ifdef USE_QT_LZ4
     // init
@@ -409,7 +421,7 @@ bool ImageCompressor::runLz4Compress(const QString &astcFileName)
     inputFile.close();
 
     inputBufferSize = static_cast<size_t>(inputByteArray.size());
-    INFO << "Input buffer size:" << inputBufferSize;
+    DEBUG << "Input buffer size:" << inputBufferSize;
 
     if (inputBufferSize < 20)
     {
@@ -419,7 +431,7 @@ bool ImageCompressor::runLz4Compress(const QString &astcFileName)
 
     // make output data
     outputBufferSize = LZ4_compressBound(static_cast<int>(inputBufferSize));
-    INFO << "Maximum output buffer size:" << outputBufferSize;
+    DEBUG << "Maximum output buffer size:" << outputBufferSize;
 
     outputBuffer = new char[outputBufferSize];
     outputBufferSize = LZ4_compress(inputBuffer,
@@ -459,8 +471,8 @@ bool ImageCompressor::runLz4Compress(const QString &astcFileName)
     input_file_size = ftell(fp_in);
     rewind(fp_in);
     output_file_size = LZ4_compressBound(input_file_size);
-    INFO << "Input file size:" << input_file_size;
-    INFO << "Output LZ4_compressBound:" << output_file_size;
+    DEBUG << "Input file size:" << input_file_size;
+    DEBUG << "Output LZ4_compressBound:" << output_file_size;
 
     if (input_file_size < 20)
     {
@@ -485,7 +497,7 @@ bool ImageCompressor::runLz4Compress(const QString &astcFileName)
 
     // read all data from input file
     byte_read = fread(input_file_data, sizeof(char), input_file_size, fp_in);
-    INFO << "Read successfully" << byte_read << " byte.";
+    DEBUG << "Read successfully" << byte_read << " byte.";
 
     // do a LZ4 compression
     output_file_size = LZ4_compress(input_file_data, output_file_data, (int)input_file_size);

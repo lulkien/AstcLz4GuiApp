@@ -7,38 +7,38 @@ Utilities::Utilities()
 
 }
 
-bool Utilities::removeFile(QStringRef fileNameRef)
+bool Utilities::removeFile(const QString &fileNameRef)
 {
-    INFO << "Try to remove file:" << fileNameRef;
+    DEBUG << "Try to remove file:" << fileNameRef;
 
-    if (QFile::exists(STREF_TO_STR(fileNameRef)))
-        return QFile::remove(STREF_TO_STR(fileNameRef));
+    if (QFile::exists(fileNameRef))
+        return QFile::remove(fileNameRef);
 
-    INFO << fileNameRef << "not existed";
+    DEBUG << fileNameRef << "not existed";
     return true;
 }
 
-QString Utilities::hdrFileName(QStringRef astcFilename)
+QString Utilities::hdrFileName(const QString &astcFilename)
 {
-    return QString("%1.header").arg(STREF_TO_STR(astcFilename));
+    return QString("%1.header").arg(astcFilename);
 }
 
-QString Utilities::gzFileName(QStringRef astcFilename)
+QString Utilities::gzFileName(const QString &astcFilename)
 {
-    return QString("%1.gz").arg(STREF_TO_STR(astcFilename));
+    return QString("%1.gz").arg(astcFilename);
 }
 
-QString Utilities::lz4FileName(QStringRef astcFilename)
+QString Utilities::lz4FileName(const QString &astcFilename)
 {
-    return QString("%1.lz4").arg(STREF_TO_STR(astcFilename));
+    return QString("%1.lz4").arg(astcFilename);
 }
 
-QString Utilities::astcFileName(QStringRef pngFilename)
+QString Utilities::astcFileName(const QString &pngFilename)
 {
-    return QString("%1.astc").arg(STREF_TO_STR(pngFilename));
+    return QString("%1.astc").arg(pngFilename);
 }
 
-QString Utilities::backupAstcFileName(QStringRef astcFilename)
+QString Utilities::backupAstcFileName(const QString &astcFilename)
 {
-    return QString("%1_").arg(STREF_TO_STR(astcFilename));
+    return QString("%1_").arg(astcFilename);
 }
