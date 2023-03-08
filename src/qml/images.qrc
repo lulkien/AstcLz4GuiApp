@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>Images/AboutIcon.png</file>
+        <file>Images/home.svg</file>
+        <file>Images/HomeIcon.png</file>
+        <file>Images/info.svg</file>
+        <file>Images/power.svg</file>
+        <file>Images/SettingIcon.png</file>
+        <file>Images/setup.svg</file>
+        <file>Images/user.svg</file>
+    </qresource>
+</RCC>

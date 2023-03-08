@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/qml">
+        <file>qml_testing/Components/ALG_ProgressBar.qml</file>
+        <file>qml_testing/Screens/ALG_MainScreen.qml</file>
+        <file>qml_testing/main.qml</file>
+        <file>qml_testing/Components/ALG_Button.qml</file>
+        <file>qml_testing/Components/ALG_TabBar.qml</file>
+        <file>qml_testing/Components/ALG_TabItem.qml</file>
+        <file>qml_testing/Components/ALG_TabIndexer.qml</file>
+        <file>qml_testing/Screens/ALG_ScreenLoader.qml</file>
+        <file>qml_testing/Screens/ALG_SetupScreen.qml</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>resources/png/home.png</file>
+        <file>resources/png/info.png</file>
+        <file>resources/png/power.png</file>
+        <file>resources/png/setup.png</file>
+        <file>resources/png/user.png</file>
+        <file>resources/svg/home.svg</file>
+        <file>resources/svg/info.svg</file>
+        <file>resources/svg/power.svg</file>
+        <file>resources/svg/setup.svg</file>
+        <file>resources/svg/user.svg</file>
+    </qresource>
+</RCC>

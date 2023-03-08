@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Gui/main.qml</file>
+        <file>Gui/QHMI_InputFiles.qml</file>
+        <file>Gui/QHMI_LogOutput.qml</file>
+        <file>Gui/QHMI_OptionBox.qml</file>
+        <file>Gui/Components/QRadioButton.qml</file>
+        <file>Gui/Components/QProgressBar.qml</file>
+        <file>Gui/Components/QButton.qml</file>
+        <file>Gui/Components/QFormInput.qml</file>
+        <file>Gui/HomeScreen.qml</file>
+        <file>Gui/SettingScreen.qml</file>
+        <file>Gui/AboutScreen.qml</file>
+        <file>Gui/QHMI_Tabbar.qml</file>
+    </qresource>
+</RCC>
