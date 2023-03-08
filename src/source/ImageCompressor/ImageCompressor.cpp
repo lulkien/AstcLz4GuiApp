@@ -67,10 +67,10 @@ bool ImageCompressor::createNormalizedImage(const QString &normalizedFileName, c
     if (SETTINGS.keep() && QFile::exists(normalizedFileName))
         return true;
 
-    QImage image(m_pngFileName);
-    if (image.isNull())
+    QImage image;
+    if (!image.load(m_pngFileName, "png"))
     {
-        WARN << "Cannot read image file:" << m_pngFileName;
+        WARN << "Error loading" << m_pngFileName;
         return false;
     }
 
@@ -89,7 +89,7 @@ bool ImageCompressor::createNormalizedImage(const QString &normalizedFileName, c
 
     if (!exportImage(image, normalizedFileName))
     {
-        WARN << "Cannot export image >" + normalizedFileName;
+        WARN << "Cannot export image " << normalizedFileName;
         return false;
     }
 
@@ -126,7 +126,10 @@ bool ImageCompressor::exportImage(const QImage &image, const QString &exportFile
         return false;
 
     if (!image.save(exportFileName, "png"))
+    {
+        WARN << "Error saving" << exportFileName;
         return false;
+    }
 
     if (!SETTINGS.noPremult())
     {
