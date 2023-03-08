@@ -127,6 +127,7 @@ Item {
         }
 
         Text {
+            id: statistic_text
             anchors.top: progressBar.bottom
             width: parent.width
             height: statistics_area.height - progressBar.height
@@ -135,6 +136,17 @@ Item {
             text: "Total found images: " + AppModel.totalFound + "\n"
                   + "Success count: " + AppModel.successCount + " (" + progressBar.successRate + "%)\n"
                   + "Failure count: " + AppModel.failureCount + " (" + progressBar.failureRate + "%)"
+        }
+
+        ALG_Loading {
+            id: loading
+            visible: (AppModel.isScanning || AppModel.isProcessing)
+            icoSize: 40
+            anchors {
+                verticalCenter: statistic_text.verticalCenter
+                right: statistics_area.right
+                rightMargin: 50
+            }
         }
     }
 

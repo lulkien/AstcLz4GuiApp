@@ -17,6 +17,7 @@ ImageCompressor::ImageCompressor(const QString &pngFileName)
 
 bool ImageCompressor::compress()
 {
+    INFO << m_pngFileName;
     QFileInfo info(m_pngFileName);
     if (!info.exists())
     {
@@ -62,6 +63,7 @@ bool ImageCompressor::compress()
 
 bool ImageCompressor::createNormalizedImage(const QString &normalizedFileName, const QString &astcFileName)
 {
+    INFO << normalizedFileName;
     if (SETTINGS.keep() && QFile::exists(normalizedFileName))
         return true;
 
@@ -116,7 +118,6 @@ bool ImageCompressor::exportImage(const QImage &image, const QString &exportFile
 
     if (image.format() != QImage::Format_ARGB32)
     {
-        Q_ASSERT(false);
         WARN << "Wrong format";
         return false;
     }
@@ -208,7 +209,7 @@ process_flow_ctrl ImageCompressor::convert_png_to_premult_bitmap(const QString &
         return p_failure;
     }
 
-    INFO << "--> Done";
+    INFO << "-> Done";
     return p_success;
 }
 
@@ -220,7 +221,13 @@ bool ImageCompressor::convert_premult_bitmap_to_png(const QString &bmpFileName, 
         return false;
     }
 
-    QImage image(bmpFileName);
+    QImage image;
+    if (!image.load(bmpFileName, "bmp"))
+    {
+        WARN << "Error loading" << bmpFileName;
+        return false;
+    }
+
     if (!image.save(pngFileName, "png"))
     {
         WARN << "Error saving" << pngFileName;
@@ -353,7 +360,7 @@ process_flow_ctrl ImageCompressor::runAstcEncoder(const QString &normalizedFileN
     }
     astcFile.close();
 
-    INFO << "--> Done";
+    INFO << "---> Done";
     return p_success;
 
 }

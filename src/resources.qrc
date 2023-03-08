@@ -9,6 +9,7 @@
         <file>qml_testing/Components/ALG_TabIndexer.qml</file>
         <file>qml_testing/Screens/ALG_ScreenLoader.qml</file>
         <file>qml_testing/Screens/ALG_SetupScreen.qml</file>
+        <file>qml_testing/Components/ALG_Loading.qml</file>
     </qresource>
     <qresource prefix="/images">
         <file>resources/png/home.png</file>
@@ -21,5 +22,6 @@
         <file>resources/svg/power.svg</file>
         <file>resources/svg/setup.svg</file>
         <file>resources/svg/user.svg</file>
+        <file>resources/png/loading.png</file>
     </qresource>
 </RCC>
