@@ -14,7 +14,6 @@ public:
     bool isTerminated() const { return m_isTerminated; }
 
 private:
-
     // normalized image
     bool createNormalizedImage(const QString& normalizedFileName,
                                const QString& astcFileName);
@@ -35,6 +34,9 @@ private:
 
     // lz4
     bool runLz4Compress(const QString& astcFileName);
+
+    // process
+    bool waitProcess();
 
 private:
     const QString m_pngFileName;

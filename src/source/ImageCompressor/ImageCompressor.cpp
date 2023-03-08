@@ -186,22 +186,8 @@ process_flow_ctrl ImageCompressor::convert_png_to_premult_bitmap(const QString &
     DEBUG << "Running" << IMAGE_MAGICK << "with" << args;
     m_process.start(IMAGE_MAGICK, args);
 
-    //Wake up every 100ms and check if we must exit
-    while(!m_process.waitForFinished(100))
-    {
-        if (QThread::currentThread()->isInterruptionRequested())
-        {
-            WARN << "TERMINATE" << IMAGE_MAGICK;
-            m_process.terminate();
-            if (!m_process.waitForFinished(1000))
-            {
-                WARN << "KILL" << IMAGE_MAGICK;
-                m_process.kill();
-            }
-            m_isTerminated = true;
-            return p_terminated;
-        }
-    }
+    if (!waitProcess())
+        return p_terminated;
 
     if (m_process.exitCode() != 0)
     {
@@ -291,21 +277,8 @@ process_flow_ctrl ImageCompressor::runAstcEncoder(const QString &normalizedFileN
         DEBUG << "Running" << ASTCENCODER << "with arguments" << args;
         m_process.start(ASTCENCODER, args);
 
-        while(!m_process.waitForFinished(100)) //Wake up every 100ms and check if we must exit
-        {
-            if (QThread::currentThread()->isInterruptionRequested())
-            {
-                WARN << "TERMINATE" << ASTCENCODER;
-                m_process.terminate();
-                if (!m_process.waitForFinished(1000))
-                {
-                    WARN << "KILL" << ASTCENCODER;
-                    m_process.kill();
-                }
-                m_isTerminated = true;
-                return p_terminated;
-            }
-        }
+        if (!waitProcess())
+            return p_terminated;
 
         if (m_process.exitCode() != 0)
         {
@@ -520,6 +493,27 @@ bool ImageCompressor::runLz4Compress(const QString &astcFileName)
     free(output_file_data);
     free(input_file_data);
 #endif
+    return true;
+}
+
+bool ImageCompressor::waitProcess()
+{
+    INFO << m_process.program();
+    while(!m_process.waitForFinished(100)) //Wake up every 100ms and check if we must exit
+    {
+        if (QThread::currentThread()->isInterruptionRequested())
+        {
+            WARN << "TERMINATE" << m_process.program();
+            m_process.terminate();
+            if (!m_process.waitForFinished(1000))
+            {
+                WARN << "KILL" << m_process.program();
+                m_process.kill();
+            }
+            m_isTerminated = true;
+            return false;
+        }
+    }
     return true;
 }
 
