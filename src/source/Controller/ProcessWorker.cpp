@@ -26,7 +26,7 @@ void ProcessWorker::onStartProcessImages()
                 MODEL.setFailureCount(MODEL.failureCount() + 1);
             if (process.isTerminated())
             {
-                WARN << "Process is terminated";
+                WARN << "Worker has been terminated";
                 return;
             }
         }

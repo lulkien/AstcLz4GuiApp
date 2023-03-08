@@ -24,7 +24,7 @@ ApplicationEngine::~ApplicationEngine()
     INFO;
     if (MODEL.isProcessing())
     {
-        WARN << "Terminate image processor";
+        WARN << "Request terminate ProcessWorker";
         m_processThread.requestInterruption();
     }
     m_processThread.quit();

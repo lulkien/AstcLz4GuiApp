@@ -4,6 +4,7 @@
 #include <QString>
 #include <QImage>
 #include <QProcess>
+#include "Common.h"
 
 class ImageCompressor
 {
@@ -19,16 +20,16 @@ private:
                                const QString& astcFileName);
     bool exportImage(const QImage &image, const QString &exportFileName);
     bool premultiplyImage(const QString &fileName);
-    bool convert_png_to_premult_bitmap(const QString& pngFileName,
-                                   const QString& bmpFileName);
+    process_flow_ctrl convert_png_to_premult_bitmap(const QString& pngFileName,
+                                                    const QString& bmpFileName);
     bool convert_premult_bitmap_to_png(const QString& bmpFileName,
                                    const QString& pngFileName);
 
     // astcenc
-    bool runAstcEncoder(const QString& normalizedFileName,
-                        const QString& astcFileName);
-    int retrieveAstcFromBackup(const QString& backupAstcFileName,
-                               const QString& astcFileName);
+    process_flow_ctrl runAstcEncoder(const QString& normalizedFileName,
+                                     const QString& astcFileName);
+    function_flow_ctrl retrieveAstcFromBackup(const QString& backupAstcFileName,
+                                              const QString& astcFileName);
     void backupAstcFile(const QString& astcFileName,
                         const QString& backupAstcFileName);
 

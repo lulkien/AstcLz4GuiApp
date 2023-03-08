@@ -19,11 +19,6 @@
 
 #define ASTCENC_HEADER_LENGTH   16
 
-// function direction
-#define RETURN_SUCCESS  1
-#define RETURN_FAILURE  -1
-#define RETURN_IGNORE   0
-
 enum function_flow_ctrl {
     f_ignore    = -1,
     f_success   = 0,

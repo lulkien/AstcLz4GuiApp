@@ -39,10 +39,17 @@ bool ImageCompressor::startProcess()
 
     if (!SETTINGS.noAstc())
     {
-        if (!runAstcEncoder(normalizedFileName, astcFilename))
-        {
-            WARN << QString("Cannot run ASTCENC for image: \"%1\" or process is terminated").arg(normalizedFileName);
+        process_flow_ctrl _status = runAstcEncoder(normalizedFileName, astcFilename);
+        switch (_status) {
+        case p_failure:
+            WARN << QString("Cannot run ASTCENC for image: \"%1\"").arg(normalizedFileName);
             return false;
+        case p_terminated:
+            WARN << "Received termination request at function ImageCompressor::runAstcEncoder";
+            return false;
+        case p_success: // fall-through
+        default:
+            break;
         }
     }
 
@@ -134,8 +141,17 @@ bool ImageCompressor::premultiplyImage(const QString &fileName)
 {
     const QString bmpFilename = fileName + STR_LITERAL(".bmp");
 
-    if (!convert_png_to_premult_bitmap(fileName, bmpFilename))
+    process_flow_ctrl _status = convert_png_to_premult_bitmap(fileName, bmpFilename);
+    switch (_status) {
+    case p_failure:
         return false;
+    case p_terminated:
+        WARN << "Received termination request at function ImageCompressor::premultiplyImage";
+        return false;
+    case p_success: // fall-through
+    default:
+        break;
+    }
 
     if (!convert_premult_bitmap_to_png(bmpFilename, fileName))
         return false;
@@ -143,12 +159,12 @@ bool ImageCompressor::premultiplyImage(const QString &fileName)
     return true;
 }
 
-bool ImageCompressor::convert_png_to_premult_bitmap(const QString &pngFileName, const QString &bmpFileName)
+process_flow_ctrl ImageCompressor::convert_png_to_premult_bitmap(const QString &pngFileName, const QString &bmpFileName)
 {
     if (!pngFileName.endsWith(".png") || !bmpFileName.endsWith(".bmp"))
     {
         WARN << "Invalid PNG of BMP filename:" << pngFileName << bmpFileName;
-        return false;
+        return p_failure;
     }
 
     const QStringList args = QStringList() << pngFileName
@@ -171,17 +187,17 @@ bool ImageCompressor::convert_png_to_premult_bitmap(const QString &pngFileName, 
                 m_process.kill();
             }
             m_isTerminated = true;
-            return false;
+            return p_terminated;
         }
     }
 
     if (m_process.exitCode() != 0)
     {
         WARN << "Error converting to BMP premultiplied";
-        return false;
+        return p_failure;
     }
 
-    return true;
+    return p_success;
 }
 
 bool ImageCompressor::convert_premult_bitmap_to_png(const QString &bmpFileName, const QString &pngFileName)
@@ -207,25 +223,26 @@ bool ImageCompressor::convert_premult_bitmap_to_png(const QString &bmpFileName, 
     return true;
 }
 
-bool ImageCompressor::runAstcEncoder(const QString &normalizedFileName, const QString &astcFileName)
+process_flow_ctrl ImageCompressor::runAstcEncoder(const QString &normalizedFileName, const QString &astcFileName)
 {
     const QString backupAstcFileName = Utilities::backupAstcFileName(STR_TO_STREF(astcFileName));
     bool useBackupAstc = false;
     if (SETTINGS.keep())
     {
         if (QFile::exists(astcFileName))
-            return true;
+            return p_success;
 
         if (QFile::exists(backupAstcFileName))
         {
-            int flag = retrieveAstcFromBackup(backupAstcFileName, astcFileName);
+            function_flow_ctrl flag = retrieveAstcFromBackup(backupAstcFileName, astcFileName);
             switch (flag) {
-            case RETURN_SUCCESS:
+            case f_success:
                 INFO << "Use backup file" << backupAstcFileName;
                 useBackupAstc = true;
                 break;
-            case RETURN_FAILURE:
-                return false;
+            case f_failure:
+                return p_failure;
+            case f_ignore:      // fall-through
             default:
                 DEBUG << "Continue";
                 useBackupAstc = false;
@@ -267,14 +284,14 @@ bool ImageCompressor::runAstcEncoder(const QString &normalizedFileName, const QS
                     m_process.kill();
                 }
                 m_isTerminated = true;
-                return false;
+                return p_terminated;
             }
         }
 
         if (m_process.exitCode() != 0)
         {
             WARN << "Cannot start " << ASTCENCODER;
-            return false;
+            return p_failure;
         }
 
         // backup after gen astc file
@@ -285,14 +302,14 @@ bool ImageCompressor::runAstcEncoder(const QString &normalizedFileName, const QS
                              && Utilities::removeFile(STR_TO_STREF(gzFileName))
                              && Utilities::removeFile(STR_TO_STREF(lz4FileName)));
         if (!removeStatus)
-            return false;
+            return p_failure;
     }
 
     QFile astcFile(astcFileName);
     if (!astcFile.open(QFile::ReadOnly))
     {
         WARN << "Cannot open ASTC file to read:" << astcFileName;
-        return false;
+        return p_failure;
     }
 
     const QByteArray astcRawData = astcFile.readAll();
@@ -302,50 +319,50 @@ bool ImageCompressor::runAstcEncoder(const QString &normalizedFileName, const QS
     if (!headerFile.open(QFile::WriteOnly))
     {
         WARN << "Cannot open ASTC header to write:" << headerFileName;
-        return false;
+        return p_failure;
     }
     if (headerFile.write(astcRawData.constData(), ASTCENC_HEADER_LENGTH) != ASTCENC_HEADER_LENGTH)
     {
         WARN << "Cannot write file" << headerFileName;
-        return false;
+        return p_failure;
     }
     headerFile.close();
 
     if (!astcFile.open(QFile::WriteOnly | QFile::Truncate))
     {
         WARN << "Cannot open ASTC file to overwrite" << astcFileName;
-        return false;
+        return p_failure;
     }
     int dataSize = astcRawData.size() - ASTCENC_HEADER_LENGTH;
     if (astcFile.write(astcRawData.constData() + ASTCENC_HEADER_LENGTH, dataSize) != dataSize)
     {
         WARN << "Cannot write file" << astcFileName;
-        return false;
+        return p_failure;
     }
     astcFile.close();
 
     INFO << "Success";
-    return true;
+    return p_success;
 
 }
 
-int ImageCompressor::retrieveAstcFromBackup(const QString &backupAstcFileName, const QString &astcFileName)
+function_flow_ctrl ImageCompressor::retrieveAstcFromBackup(const QString &backupAstcFileName, const QString &astcFileName)
 {
     QFile backupAstcFile(backupAstcFileName);
     if (backupAstcFile.copy(astcFileName))
     {
         INFO << "Retrieve ASTC from backup ASTC file successfully";
-        return RETURN_SUCCESS;
+        return f_success;
     }
 
     INFO << "Cannot retrieve ASTC file from backup ASTC file. Remove the backup file and continue...";
     if (!backupAstcFile.remove())
     {
         WARN << "Cannot remove backup ASTC file. Stop process!!!";
-        return RETURN_FAILURE;
+        return f_failure;
     }
 
-    return RETURN_IGNORE;
+    return f_ignore;
 }
 
 void ImageCompressor::backupAstcFile(const QString &astcFileName, const QString &backupAstcFileName)
