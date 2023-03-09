@@ -13,8 +13,10 @@ Item {
     readonly property int successWidth: (width / totalCount) * successCount
     readonly property int failureWidth: (width / totalCount) * failureCount
     readonly property int remainWidth: width - successWidth - failureWidth
-    readonly property int successRate: Math.ceil((successCount / totalCount) * 100)
-    readonly property int failureRate: Math.ceil((failureCount / totalCount) * 100)
+    readonly property int successRate: totalCount !== 0 ? Math.ceil((successCount / totalCount) * 100)
+                                                        : 0
+    readonly property int failureRate: totalCount !== 0 ? Math.ceil((failureCount / totalCount) * 100)
+                                                        : 0
 
     // color
     property color successColor: "green"

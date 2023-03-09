@@ -1,4 +1,5 @@
-import QtQuick 2.14
+import QtQuick 2.12
+import QtQuick.Controls 2.12
 import QmlCustomType 1.0
 import "../Components"
 
@@ -10,6 +11,7 @@ Item {
         readonly property int globalMargins: 20
         readonly property int globalButtonSize: 100
         readonly property int globalBarHeight: 35
+        readonly property int globalLogFontSize: 11
 
         readonly property string inputPath: textInput.text.trim()
 
@@ -162,9 +164,64 @@ Item {
         width: parent.width - 2 * privateProperties.globalMargins
         height: parent.height - textBox.height - buttons_area.height - 4 * privateProperties.globalMargins
         border.color: "black"
+        clip: true
+
+        ListModel {
+            id: log_model
+        }
+
+        ListView {
+            id: log_view
+            anchors.centerIn: parent
+            width: parent.width - privateProperties.globalMargins
+            height: parent.height
+            model: log_model
+            delegate: log_item
+        }
+
+        Component {
+            id: log_item
+            Item {
+                width: log_view.width
+                height: textArea.height
+
+                Text {
+                    id: textArea
+                    width: parent.width
+                    wrapMode: Text.Wrap
+                    textFormat: TextEdit.RichText
+                    padding: 4
+                    font.pixelSize: privateProperties.globalLogFontSize
+                    font.family: "Hack"
+                    text: _data
+                }
+
+//                Rectangle {
+//                    id: spliter
+//                    anchors.top:  textArea.bottom
+//                    anchors.horizontalCenter: parent.horizontalCenter
+//                    width: textArea.width * 0.8
+//                    height: 1
+//                    color: "black"
+//                }
+            }
+        }
+
+        Connections {
+            target: AppModel
+            onReqPrintQmlLog: {
+                log_model.append({ _data: logData })
+                log_view.positionViewAtEnd()
+            }
+
+            onReqClearQmlLog: {
+                log_model.clear()
+                log_view.positionViewAtBeginning()
+            }
+        }
     }
 
     Component.onCompleted: {
-        textInput.text = "/home/ark/Pictures/png"
+        textInput.text = "/home/kienlh4/Pictures/test_image"
     }
 }

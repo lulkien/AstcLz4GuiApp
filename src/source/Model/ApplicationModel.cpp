@@ -1,4 +1,6 @@
 #include "ApplicationModel.h"
+#include <QDateTime>
+#include <QTime>
 
 #define MAX_IMAGE_ALLOW 500
 
@@ -6,6 +8,24 @@ ApplicationModel &ApplicationModel::instance()
 {
     static ApplicationModel _self;
     return _self;
+}
+
+void ApplicationModel::printQmlLogWithTime(QString logData)
+{
+    QTime now = QTime::currentTime();
+    QString formatedTime = now.toString("[hh:mm:ss.zzz]<br>");
+    logData = formatedTime + logData;
+    emit reqPrintQmlLog(logData);
+}
+
+void ApplicationModel::printQmlLog(QString logData)
+{
+    emit reqPrintQmlLog(logData);
+}
+
+void ApplicationModel::clearQmlLog()
+{
+    emit reqClearQmlLog();
 }
 
 void ApplicationModel::setIsDirectory(bool isDirectory)

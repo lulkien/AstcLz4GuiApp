@@ -10,6 +10,7 @@
 #define STREF_TO_STR(stref)     *(stref.string())
 #define STR_TO_STREF(str)       (QStringRef(&str))
 #define STR_LITERAL(str)        QLatin1String(str)
+#define FILE_NAME(path)         QFileInfo(path).fileName()
 
 #define IMAGE_MAGICK        QLatin1String("/usr/local/astc_lz4_tools/convert")
 #define ASTCENCODER         QLatin1String("/usr/local/astc_lz4_tools/astcenc")

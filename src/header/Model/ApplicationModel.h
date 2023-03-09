@@ -35,8 +35,11 @@ public:
     int successCount() const        { return m_successCount; }
     int failureCount() const        { return m_failureCount; }
     QStringList listFiles() const   { return m_listFiles; }
-
     int currentTab() const          { return m_currentTab; }
+
+    void printQmlLogWithTime(QString logData);
+    void printQmlLog(QString logData);
+    void clearQmlLog();
 
 public slots:
     void setIsDirectory(bool isDirectory);
@@ -48,7 +51,6 @@ public slots:
     void setSuccessCount(int successCount);
     void setFailureCount(int failureCount);
     void setListFiles(QStringList list);
-
     void setCurrentTab(int currentTab);
 
 private:
@@ -63,8 +65,10 @@ signals:
     void totalFoundChanged(int totalFound);
     void successCountChanged(int successCount);
     void failureCountChanged(int failureCount);
-
     void currentTabChanged(int currentTab);
+
+    void reqPrintQmlLog(QString logData);
+    void reqClearQmlLog();
 
 private:
     bool m_isDirectory;

@@ -86,10 +86,11 @@ QStringList ApplicationEngine::scanAllPngFromDirectory(const QString &dir)
         if (!found.endsWith(".normalized.png"))
         {
             DEBUG << "Found:" << found;
+            MODEL.printQmlLogWithTime("Found: " + found);
             list << found;
         }
     }
-    INFO << "Total:" << list.count();
+    MODEL.printQmlLogWithTime(QString("Total found: %1 image(s)").arg(list.count()));
     return list;
 }
 
