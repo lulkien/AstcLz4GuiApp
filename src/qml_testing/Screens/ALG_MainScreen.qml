@@ -40,14 +40,13 @@ Item {
         TextInput {
             id: textInput
             enabled: !(AppModel.isScanning || AppModel.isProcessing)
-            width: textBox.width - 20
+            width: textBox.width - privateProperties.globalMargins
             height: textBox.height
             anchors.centerIn: textBox
             verticalAlignment: TextInput.AlignVCenter
             color: AppModel.sourcePathFound ? "#000000" : "#FF4141"
             onTextChanged: {
                 textInputUpdateTimer.restart()
-//                AppModel.sourcePath = privateProperties.inputPath
             }
         }
 
@@ -172,11 +171,11 @@ Item {
 
         ListView {
             id: log_view
-            anchors.centerIn: parent
-            width: parent.width - privateProperties.globalMargins
-            height: parent.height
+            anchors.fill: parent
             model: log_model
+            boundsBehavior: Flickable.StopAtBounds
             delegate: log_item
+            ScrollBar.vertical: ScrollBar {}
         }
 
         Component {
@@ -187,7 +186,8 @@ Item {
 
                 Text {
                     id: textArea
-                    width: parent.width
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: parent.width - privateProperties.globalMargins / 2
                     wrapMode: Text.Wrap
                     textFormat: TextEdit.RichText
                     padding: 4
@@ -195,26 +195,17 @@ Item {
                     font.family: "Hack"
                     text: _data
                 }
-
-//                Rectangle {
-//                    id: spliter
-//                    anchors.top:  textArea.bottom
-//                    anchors.horizontalCenter: parent.horizontalCenter
-//                    width: textArea.width * 0.8
-//                    height: 1
-//                    color: "black"
-//                }
             }
         }
 
         Connections {
             target: AppModel
-            onReqPrintQmlLog: {
+            function onReqPrintQmlLog(logData) {
                 log_model.append({ _data: logData })
                 log_view.positionViewAtEnd()
             }
 
-            onReqClearQmlLog: {
+            function onReqClearQmlLog() {
                 log_model.clear()
                 log_view.positionViewAtBeginning()
             }
@@ -222,6 +213,6 @@ Item {
     }
 
     Component.onCompleted: {
-        textInput.text = "/home/kienlh4/Pictures/test_image"
+        textInput.text = "/home/ark/Pictures/png"
     }
 }

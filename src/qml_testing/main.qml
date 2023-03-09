@@ -10,7 +10,7 @@ Window {
     minimumHeight: 600
     maximumWidth: 800
     maximumHeight: 600
-    title: qsTr("GEN IMAGES")
+    title: qsTr("Over-engineering ASTC generator")
 
     ALG_ScreenLoader {
         id: loader

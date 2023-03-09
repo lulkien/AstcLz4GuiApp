@@ -502,7 +502,7 @@ bool ImageCompressor::runLz4Compress(const QString &astcFileName)
 
 bool ImageCompressor::waitProcess()
 {
-    INFO << m_process.program();
+    DEBUG << m_process.program();
     while(!m_process.waitForFinished(100)) //Wake up every 100ms and check if we must exit
     {
         if (QThread::currentThread()->isInterruptionRequested())

@@ -10,6 +10,7 @@
         <file>qml_testing/Screens/ALG_ScreenLoader.qml</file>
         <file>qml_testing/Screens/ALG_SetupScreen.qml</file>
         <file>qml_testing/Components/ALG_Loading.qml</file>
+        <file>qml_testing/Components/ALG_Frame.qml</file>
     </qresource>
     <qresource prefix="/images">
         <file>resources/png/home.png</file>

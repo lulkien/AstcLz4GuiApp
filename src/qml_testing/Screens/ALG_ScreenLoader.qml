@@ -10,18 +10,16 @@ Item {
     }
 
     Loader {
+        id: mainScreenLoader
         anchors.fill: parent
-        source: getSource(AppModel.currentTab)
+        visible: AppModel.currentTab === QmlEvents.MAIN_SCREEN
+        source: "qrc:/qml/qml_testing/Screens/ALG_MainScreen.qml"
     }
 
-    function getSource(screenID) {
-        switch (screenID) {
-        case QmlEvents.MAIN_SCREEN:
-            return "qrc:/qml/qml_testing/Screens/ALG_MainScreen.qml"
-        case QmlEvents.SETUP_SCREEN:
-            return "qrc:/qml/qml_testing/Screens/ALG_SetupScreen.qml"
-        default:
-            return ""
-        }
+    Loader {
+        id: setupScreenLoader
+        anchors.fill: parent
+        visible: AppModel.currentTab === QmlEvents.SETUP_SCREEN
+        source: "qrc:/qml/qml_testing/Screens/ALG_SetupScreen.qml"
     }
 }
