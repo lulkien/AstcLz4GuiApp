@@ -18,42 +18,21 @@ bool Utilities::removeFile(const QString &fileNameRef)
     return true;
 }
 
-QString Utilities::astcFileName(const QString &pngFilename)
+QString Utilities::modifyPath(QString origName, QLatin1String oldSuffix, QLatin1String newSuffix, QStringView oldPrefix, QStringView newPrefix)
 {
-    QString newString = pngFilename;
-    if (MODEL.sourcePath() != MODEL.backupDir())
-        newString.replace(MODEL.sourcePath(), MODEL.backupDir());
+    if (!oldSuffix.isEmpty() && origName.endsWith(oldSuffix))
+    {
+        origName.chop(oldSuffix.size());
+    }
+    origName.append(newSuffix);
 
-    return QString("%1.astc").arg(newString);
-}
-
-QString Utilities::normalizedFileName(const QString &pngFileName)
-{
-    QFileInfo info(pngFileName);
-    QString newString = QString("%1/%2.normalized.png")
-            .arg(info.absolutePath(), info.completeBaseName());
-    if (MODEL.sourcePath() != MODEL.backupDir())
-        newString.replace(MODEL.sourcePath(), MODEL.backupDir());
-
-    return newString;
-}
-
-QString Utilities::hdrFileName(const QString &astcFilename)
-{
-    QString newString = astcFilename + QLatin1String(".header");
-    newString.replace(MODEL.backupDir(), MODEL.resultDir());
-    return newString;
-}
-
-QString Utilities::lz4FileName(const QString &astcFilename)
-{
-    QString newString = astcFilename + QLatin1String(".lz4");
-    newString.replace(MODEL.backupDir(), MODEL.resultDir());
-    return newString;
-}
-
-QString Utilities::backupAstcFileName(const QString &astcFilename)
-{
-    QString newString = astcFilename + QLatin1String("_");
-    return newString;
+    if (oldPrefix.isEmpty() || newPrefix.isEmpty())
+        return origName;
+    if (!origName.startsWith(newPrefix)
+            && oldPrefix.compare(newPrefix) != 0)
+    {
+        origName.remove(0, oldPrefix.length());
+        origName.prepend(newPrefix);
+    }
+    return origName;
 }

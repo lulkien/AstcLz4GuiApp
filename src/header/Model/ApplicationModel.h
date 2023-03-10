@@ -52,6 +52,7 @@ public:
     QString backupDir() const { return m_backupDir; }
     void setResultDir(const QString &dir);
     QString resultDir() const { return m_resultDir; }
+    QString workingDir() const;
 
 
 public slots:

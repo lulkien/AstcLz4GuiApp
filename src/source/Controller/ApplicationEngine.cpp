@@ -71,13 +71,14 @@ void ApplicationEngine::loadImages()
     if (MODEL.isDirectory())
     {
         MODEL.setIsScanning(true);
+        MODEL.printQmlLog(Events::QML_WARN, QString("Loaded directory: %1").arg(MODEL.sourcePath()));
         MODEL.setListFiles(scanAllPngFromDirectory(MODEL.sourcePath()));
         MODEL.setIsScanning(false);
     }
     else
     {
         MODEL.setIsScanning(true);
-        MODEL.printQmlLog(Events::QML_INFO, "Loaded file: " + MODEL.sourcePath());
+        MODEL.printQmlLog(Events::QML_WARN, QString("Loaded file: %1").arg(MODEL.sourcePath()));
         MODEL.setFile(MODEL.sourcePath());
         MODEL.setIsScanning(false);
     }
@@ -97,8 +98,7 @@ void ApplicationEngine::genImages()
 QStringList ApplicationEngine::scanAllPngFromDirectory(const QString &dir)
 {
     QStringList list;
-
-    if (!makeDestDirectory(dir))
+    if (!makeOutputDirectory(dir))
     {
         MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Cannot make destination directory."));
         MODEL.setIsRunable(false);
@@ -107,7 +107,6 @@ QStringList ApplicationEngine::scanAllPngFromDirectory(const QString &dir)
 
     // scan all images file after confirm destination directory is made
     QDirIterator iter(dir, QStringList() << "*.png" << "*.PNG", QDir::Files, QDirIterator::Subdirectories);
-    MODEL.printQmlLog(Events::QML_WARN, QString("Scan directory: <b>%1</b>").arg(dir));
     while (iter.hasNext())
     {
         QString found = iter.next();
@@ -131,8 +130,11 @@ QString ApplicationEngine::getCurrentUser()
     return name;
 }
 
-void ApplicationEngine::verifyInputPath(const QString &path)
+void ApplicationEngine::verifyInputPath(QString path)
 {
+    if (path.endsWith(QLatin1Char('/')))
+        path.chop(1);
+
     QFileInfo info(path);
     if (!info.exists())
     {
@@ -173,6 +175,8 @@ void ApplicationEngine::verifyInputPath(const QString &path)
         INFO << "File found:" << path;
         MODEL.setSourcePath(path);
         MODEL.setIsDirectory(false);
+        MODEL.setBackupDir(info.path());
+        MODEL.setResultDir(info.path());
         MODEL.setSourcePathFound(true);
     }
     else
@@ -181,11 +185,11 @@ void ApplicationEngine::verifyInputPath(const QString &path)
     }
 }
 
-bool ApplicationEngine::makeDestDirectory(const QString &srcDir)
+bool ApplicationEngine::makeOutputDirectory(const QString &inputDir)
 {
     // Create parent backup and result dir
-    QString backupDir = srcDir + QLatin1String("_backup");
-    QString resultDir = srcDir + QLatin1String("_result");
+    QString backupDir = inputDir + QLatin1String("_backup");
+    QString resultDir = inputDir + QLatin1String("_result");
 
     if (!makeBackupDir(backupDir))
         return false;
@@ -196,13 +200,13 @@ bool ApplicationEngine::makeDestDirectory(const QString &srcDir)
     MODEL.setResultDir(resultDir);
 
     // Create child dir
-    QDirIterator iterDir(srcDir, QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+    QDirIterator iterDir(inputDir, QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
     while (iterDir.hasNext())
     {
         QString found = iterDir.next();
         DEBUG << "Found dir:" << found;
 
-        QString backup = QString(found).insert(srcDir.length(), "_backup");
+        QString backup = QString(found).insert(inputDir.length(), "_backup");
         if (!QDir().mkpath(backup))
         {
             MODEL.printQmlLog(Events::QML_FATAL, QString("Cannot make path %1").arg(backup));
@@ -210,7 +214,7 @@ bool ApplicationEngine::makeDestDirectory(const QString &srcDir)
         }
         DEBUG << "Make backup directory:" << backup;
 
-        QString result = QString(found).insert(srcDir.length(), "_result");
+        QString result = QString(found).insert(inputDir.length(), "_result");
         if (!QDir().mkpath(result))
         {
             MODEL.printQmlLog(Events::QML_FATAL, QString("Cannot make path %1").arg(result));
@@ -237,6 +241,11 @@ bool ApplicationEngine::makeBackupDir(const QString &path)
             return false;
         }
         return true;
+    }
+    if (!info.exists())
+    {
+        INFO << "Make path" << path;
+        return QDir().mkpath(path);
     }
 
     WARN << "Cannot regconize" << path << ", write backup in to input directory";

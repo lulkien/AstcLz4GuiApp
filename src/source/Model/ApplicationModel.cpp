@@ -3,6 +3,7 @@
 #include "Events.h"
 
 #include <QDateTime>
+#include <QFileInfo>
 #include <QTime>
 
 #define MAX_IMAGE_ALLOW 500
@@ -56,6 +57,12 @@ void ApplicationModel::setBackupDir(const QString &dir)
 void ApplicationModel::setResultDir(const QString &dir)
 {
     m_resultDir = dir;
+}
+
+QString ApplicationModel::workingDir() const
+{
+    return !m_isDirectory ? QFileInfo(m_sourcePath).path()
+                          : m_sourcePath;
 }
 
 void ApplicationModel::setIsDirectory(bool isDirectory)

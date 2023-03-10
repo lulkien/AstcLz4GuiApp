@@ -9,9 +9,9 @@ Settings &Settings::instance()
 
 Settings::Settings()
     : m_noFlip          { false }
-    , m_useBackup       { true  }
+    , m_useBackup       { false }
     , m_noPremult       { false }
-    , m_veryfast        { true  }
+    , m_veryfast        { false }
     , m_logLevel        { static_cast<int>(Events::QML_WARN) }
 {
 

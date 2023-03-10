@@ -14,26 +14,23 @@ public:
     bool isTerminated() const { return m_isTerminated; }
 
 private:
+    // init
+    void initPath();
+
     // normalized image
-    bool createNormalizedImage(const QString& normalizedFileName,
-                               const QString& astcFileName);
-    bool exportImage(const QImage &image, const QString &exportFileName);
-    bool premultiplyImage(const QString &fileName);
-    process_flow_ctrl convert_png_to_premult_bitmap(const QString& pngFileName,
-                                                    const QString& bmpFileName);
-    bool convert_premult_bitmap_to_png(const QString& bmpFileName,
-                                   const QString& pngFileName);
+    bool createNormalizedImage();
+    bool exportNormalizedImage(const QImage &image);
+    bool premultiplyNormalizedImage();
+    process_flow_ctrl convert_normalized_png_to_premult_bmp();
+    bool convert_premult_bmp_to_normalized_png();
 
     // astcenc
-    process_flow_ctrl runAstcEncoder(const QString& normalizedFileName,
-                                     const QString& astcFileName);
-    function_flow_ctrl retrieveAstcFromBackup(const QString& backupAstcFileName,
-                                              const QString& astcFileName);
-    void backupAstcFile(const QString& astcFileName,
-                        const QString& backupAstcFileName);
+    process_flow_ctrl runAstcEncoder();
+    function_flow_ctrl retrieveAstcFromBackup();
+    void backupAstcFile();
 
     // lz4
-    bool runLz4Compress(const QString& astcFileName);
+    bool runLz4Compress();
 
     // process
     bool waitProcess();
@@ -45,6 +42,14 @@ private:
     const QString m_pngFileName;
     QProcess m_process;
     bool m_isTerminated;
+
+    // unchanged path
+    QString m_normalizedPath;
+    QString m_premultBmpPath;
+    QString m_astcPath;
+    QString m_astcBackupPath;
+    QString m_astcHeaderPath;
+    QString m_astcLz4Path;
 };
 
 #endif // IMAGECOMPRESSOR_H

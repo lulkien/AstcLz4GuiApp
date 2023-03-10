@@ -29,9 +29,9 @@ private:
     // general
     QStringList scanAllPngFromDirectory(const QString &dir);
     QString getCurrentUser();
-    void verifyInputPath(const QString &path);
+    void verifyInputPath(QString path);
 
-    bool makeDestDirectory(const QString &srcDir);
+    bool makeOutputDirectory(const QString &inputDir);
     bool makeBackupDir(const QString &path);
     bool makeResultDir(const QString &path);
 
