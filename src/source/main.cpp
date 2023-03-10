@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[])
 {
-    QLoggingCategory::setFilterRules("*.debug=false");
+//    QLoggingCategory::setFilterRules("*.debug=false");
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app(argc, argv);

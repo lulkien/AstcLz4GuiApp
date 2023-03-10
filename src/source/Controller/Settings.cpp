@@ -7,12 +7,10 @@ Settings &Settings::instance()
 }
 
 Settings::Settings()
-    : m_noFlip      { false }
-    , m_keep        { false }
-    , m_noPremult   { false }
-    , m_noAstc      { false }
-    , m_veryfast    { false }
-    , m_backupAstc  { false }
+    : m_noFlip          { false }
+    , m_useBackup       { true }
+    , m_noPremult       { false }
+    , m_veryfast        { true }
 {
 
 }
@@ -26,13 +24,13 @@ void Settings::setNoFlip(bool noFlip)
     emit noFlipChanged(m_noFlip);
 }
 
-void Settings::setKeep(bool keep)
+void Settings::setUseBackup(bool useBackup)
 {
-    if (m_keep == keep)
+    if (m_useBackup == useBackup)
         return;
 
-    m_keep = keep;
-    emit keepChanged(m_keep);
+    m_useBackup = useBackup;
+    emit useBackupChanged(m_useBackup);
 }
 
 void Settings::setNoPremult(bool noPremult)
@@ -44,15 +42,6 @@ void Settings::setNoPremult(bool noPremult)
     emit noPremultChanged(m_noPremult);
 }
 
-void Settings::setNoAstc(bool noAstc)
-{
-    if (m_noAstc == noAstc)
-        return;
-
-    m_noAstc = noAstc;
-    emit noAstcChanged(m_noAstc);
-}
-
 void Settings::setveryfast(bool veryfast)
 {
     if (m_veryfast == veryfast)
@@ -60,13 +49,4 @@ void Settings::setveryfast(bool veryfast)
 
     m_veryfast = veryfast;
     emit veryfastChanged(m_veryfast);
-}
-
-void Settings::setBackupAstc(bool backupAstc)
-{
-    if (m_backupAstc == backupAstc)
-        return;
-
-    m_backupAstc = backupAstc;
-    emit backupAstcChanged(m_backupAstc);
 }

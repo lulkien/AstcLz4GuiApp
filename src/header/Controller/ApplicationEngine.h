@@ -29,11 +29,14 @@ private:
     // general
     QStringList scanAllPngFromDirectory(const QString &dir);
     QString getCurrentUser();
+    void verifyInputPath(const QString &path);
+
+    bool makeDestDirectory(const QString &srcDir);
+    bool createDir(const QString &path);
 
 
 private slots:
     void onReceivedEvent(int eventId, QByteArray data);
-    void onSourcePathChanged();
 
 signals:
     void requestStartProcessImages();

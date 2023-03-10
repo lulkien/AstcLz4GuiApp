@@ -23,7 +23,51 @@ Item {
 
         width: (privateProperties.drawWidth - privateProperties.globalMargins) / 2
         height: (privateProperties.drawHeight - privateProperties.globalMargins) * 2 / 3
-        frameText.text: "ASTC Encoder Settings"
+        frameText.text: "Compression settings"
+
+        Item {
+            id: astcSettingsColumn
+            anchors.margins: privateProperties.globalMargins / 2
+            anchors.fill: parent
+            Column {
+                spacing: 5
+                CheckBox {
+                    width: astcSettingsColumn.width
+                    checkState: AstcSettings.noFlip ? Qt.Checked : Qt.Unchecked
+                    text: "No flip image."
+                    onClicked: {
+                        AstcSettings.noFlip = !AstcSettings.noFlip
+                    }
+                }
+
+                CheckBox {
+                    width: astcSettingsColumn.width
+                    checkState: AstcSettings.noPremult ? Qt.Checked : Qt.Unchecked
+                    text: "No premultiply image."
+                    onClicked: {
+                        AstcSettings.noPremult = !AstcSettings.noPremult
+                    }
+                }
+
+                CheckBox {
+                    width: astcSettingsColumn.width
+                    checkState: AstcSettings.useBackup ? Qt.Checked : Qt.Unchecked
+                    text: "Use backup/pregenerated ASTC."
+                    onClicked: {
+                        AstcSettings.useBackup = !AstcSettings.useBackup
+                    }
+                }
+
+                CheckBox {
+                    width: astcSettingsColumn.width
+                    checkState: AstcSettings.veryfast ? Qt.Checked : Qt.Unchecked
+                    text: "Use veryfast compression."
+                    onClicked: {
+                        AstcSettings.veryfast = !AstcSettings.veryfast
+                    }
+                }
+            }
+        }
     }
 
     ALG_Frame {
@@ -37,7 +81,7 @@ Item {
 
         width: (privateProperties.drawWidth - privateProperties.globalMargins) / 2
         height: (privateProperties.drawHeight - privateProperties.globalMargins) * 2 / 3
-        frameText.text: "Application Settings"
+        frameText.text: "Application settings"
     }
 
     ALG_Frame {

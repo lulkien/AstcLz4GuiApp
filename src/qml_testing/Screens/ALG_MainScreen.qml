@@ -17,10 +17,11 @@ Item {
 
         readonly property bool allowProcess: !(AppModel.isScanning || AppModel.isProcessing)    // not in scanning and processing (GUI block)
                                              && AppModel.totalFound !== 0                       // found at least 1 images
+                                             && AppModel.isRunable
 
         readonly property bool allowScan: !(AppModel.isScanning || AppModel.isProcessing)       // not in scanning and processing (GUI block)
-                                          && privateProperties.inputPath.length !== 0           // input not empty
-                                          && AppModel.sourcePathFound                           // input a valid path
+                                          && (AppModel.sourcePathFound || inputPath.length === 0)
+
     }
 
     Rectangle {
@@ -35,7 +36,6 @@ Item {
         width: parent.width - 2 * privateProperties.globalMargins
         height: privateProperties.globalBarHeight
         border.color: "black"
-        color: "#DADADA"
 
         TextInput {
             id: textInput
@@ -46,7 +46,8 @@ Item {
             verticalAlignment: TextInput.AlignVCenter
             color: AppModel.sourcePathFound ? "#000000" : "#FF4141"
             onTextChanged: {
-                textInputUpdateTimer.restart()
+//                textInputUpdateTimer.restart()
+                EventHandler.qmlSendEvent(QmlEvents.REQ_VERIFY_SOURCE, text.trim())
             }
         }
 
@@ -63,9 +64,9 @@ Item {
 
         Timer {
             id: textInputUpdateTimer
-            interval: 250
+            interval: 100
             onTriggered: {
-                AppModel.sourcePath = privateProperties.inputPath
+                EventHandler.qmlSendEvent(QmlEvents.REQ_VERIFY_SOURCE, privateProperties.inputPath)
             }
         }
     }
@@ -88,7 +89,10 @@ Item {
             isEnabled: privateProperties.allowScan
             label: privateProperties.inputPath.length === 0 ? "Open" : "Load"
             onClicked: {
-                EventHandler.qmlSendEvent(QmlEvents.REQ_LOAD_IMAGES)
+                if (AppModel.sourcePathFound)
+                    EventHandler.qmlSendEvent(QmlEvents.REQ_LOAD_IMAGES)
+                else
+                    menu.open()
             }
         }
 
@@ -104,6 +108,25 @@ Item {
             label: "Run"
             onClicked: {
                 EventHandler.qmlSendEvent(QmlEvents.REQ_GEN_IMAGE)
+            }
+        }
+
+        Menu {
+            id: menu
+            MenuItem {
+                text: qsTr("Open file...")
+                onTriggered: {
+                    AppModel.isDirectory = false
+//                    fileDialog.open()
+                }
+            }
+            MenuSeparator {}
+            MenuItem {
+                text: qsTr("Open folder...")
+                onTriggered: {
+                    AppModel.isDirectory = true
+//                    folderDialog.open()
+                }
             }
         }
     }
@@ -200,12 +223,12 @@ Item {
 
         Connections {
             target: AppModel
-            function onReqPrintQmlLog(logData) {
+            onReqPrintQmlLog: {
                 log_model.append({ _data: logData })
                 log_view.positionViewAtEnd()
             }
 
-            function onReqClearQmlLog() {
+            onReqClearQmlLog: {
                 log_model.clear()
                 log_view.positionViewAtBeginning()
             }
@@ -213,6 +236,6 @@ Item {
     }
 
     Component.onCompleted: {
-        textInput.text = "/home/ark/Pictures/png"
+        textInput.text = "/home/kienlh4/Pictures/dir"
     }
 }

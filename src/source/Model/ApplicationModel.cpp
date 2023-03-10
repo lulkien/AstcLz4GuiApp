@@ -1,4 +1,6 @@
 #include "ApplicationModel.h"
+#include "Events.h"
+
 #include <QDateTime>
 #include <QTime>
 
@@ -8,6 +10,20 @@ ApplicationModel &ApplicationModel::instance()
 {
     static ApplicationModel _self;
     return _self;
+}
+
+void ApplicationModel::setListFiles(const QStringList &list)
+{
+    m_listFiles.clear();
+    m_listFiles = list;
+    setTotalFound(list.count());
+}
+
+void ApplicationModel::setFile(const QString &filePath)
+{
+    m_listFiles.clear();
+    m_listFiles.append(filePath);
+    setTotalFound(1);
 }
 
 void ApplicationModel::printQmlLogWithTime(QString logData)
@@ -26,6 +42,16 @@ void ApplicationModel::printQmlLog(QString logData)
 void ApplicationModel::clearQmlLog()
 {
     emit reqClearQmlLog();
+}
+
+void ApplicationModel::setBackupDir(const QString &dir)
+{
+    m_backupDir = dir;
+}
+
+void ApplicationModel::setResultDir(const QString &dir)
+{
+    m_resultDir = dir;
 }
 
 void ApplicationModel::setIsDirectory(bool isDirectory)
@@ -101,11 +127,13 @@ void ApplicationModel::setFailureCount(int failureCount)
     emit failureCountChanged(m_failureCount);
 }
 
-void ApplicationModel::setListFiles(QStringList list)
+void ApplicationModel::setIsRunable(bool isRunable)
 {
-    m_listFiles.clear();
-    m_listFiles = list;
-    setTotalFound(list.count());
+    if (m_isRunable == isRunable)
+        return;
+
+    m_isRunable = isRunable;
+    emit isRunableChanged(m_isRunable);
 }
 
 void ApplicationModel::setCurrentTab(int currentTab)
@@ -126,7 +154,10 @@ ApplicationModel::ApplicationModel()
     , m_totalFound      { 0 }
     , m_successCount    { 0 }
     , m_failureCount    { 0 }
-    , m_currentTab      { 0 }
+    , m_isRunable       { true }
+    , m_currentTab      { static_cast<int>(Events::SETUP_SCREEN) }
+    , m_backupDir       { "" }
+    , m_resultDir       { "" }
 {
     m_listFiles.clear();
 }
