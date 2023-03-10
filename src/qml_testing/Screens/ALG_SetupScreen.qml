@@ -31,7 +31,7 @@ Item {
             anchors.fill: parent
             Column {
                 spacing: 5
-                CheckBox {
+                ALG_CheckBox {
                     width: astcSettingsColumn.width
                     checkState: AstcSettings.noFlip ? Qt.Checked : Qt.Unchecked
                     text: "No flip image."
@@ -40,7 +40,7 @@ Item {
                     }
                 }
 
-                CheckBox {
+                ALG_CheckBox {
                     width: astcSettingsColumn.width
                     checkState: AstcSettings.noPremult ? Qt.Checked : Qt.Unchecked
                     text: "No premultiply image."
@@ -49,7 +49,7 @@ Item {
                     }
                 }
 
-                CheckBox {
+                ALG_CheckBox {
                     width: astcSettingsColumn.width
                     checkState: AstcSettings.useBackup ? Qt.Checked : Qt.Unchecked
                     text: "Use backup/pregenerated ASTC."
@@ -58,7 +58,7 @@ Item {
                     }
                 }
 
-                CheckBox {
+                ALG_CheckBox {
                     width: astcSettingsColumn.width
                     checkState: AstcSettings.veryfast ? Qt.Checked : Qt.Unchecked
                     text: "Use veryfast compression."

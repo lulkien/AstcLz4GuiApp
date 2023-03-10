@@ -36,8 +36,9 @@ Item {
         width: parent.width - 2 * privateProperties.globalMargins
         height: privateProperties.globalBarHeight
         border.color: "black"
+        clip: true
 
-        TextInput {
+        ALG_TextInput {
             id: textInput
             enabled: !(AppModel.isScanning || AppModel.isProcessing)
             width: textBox.width - privateProperties.globalMargins
@@ -46,8 +47,8 @@ Item {
             verticalAlignment: TextInput.AlignVCenter
             color: AppModel.sourcePathFound ? "#000000" : "#FF4141"
             onTextChanged: {
-//                textInputUpdateTimer.restart()
-                EventHandler.qmlSendEvent(QmlEvents.REQ_VERIFY_SOURCE, text.trim())
+                textInputUpdateTimer.restart()
+//                EventHandler.qmlSendEvent(QmlEvents.REQ_VERIFY_SOURCE, text.trim())
             }
         }
 
@@ -150,13 +151,13 @@ Item {
             failureCount: AppModel.failureCount
         }
 
-        Text {
+        ALG_Text {
             id: statistic_text
             anchors.top: progressBar.bottom
             width: parent.width
             height: statistics_area.height - progressBar.height
             verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 14
+            font.pixelSize: 13
             text: "Total found images: " + AppModel.totalFound + "\n"
                   + "Success count: " + AppModel.successCount + " (" + progressBar.successRate + "%)\n"
                   + "Failure count: " + AppModel.failureCount + " (" + progressBar.failureRate + "%)"
@@ -224,6 +225,8 @@ Item {
         Connections {
             target: AppModel
             onReqPrintQmlLog: {
+                if (log_model.count >= 100)
+                    log_model.remove(0)
                 log_model.append({ _data: logData })
                 log_view.positionViewAtEnd()
             }
@@ -236,6 +239,6 @@ Item {
     }
 
     Component.onCompleted: {
-        textInput.text = "/home/kienlh4/Pictures/dir"
+        textInput.text = "/home/ark/Pictures/lv0"
     }
 }

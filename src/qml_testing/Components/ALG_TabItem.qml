@@ -39,22 +39,17 @@ Item {
         }
     }
 
-    Text {
+    ALG_Text {
         id: label
-
         anchors {
-            verticalCenter: root.verticalCenter
-            left: root.left
-            leftMargin: root.width * 0.15
+            left: parent.left
+            leftMargin: (parent.width - ico.width / 2 - label.width) / 2
+            verticalCenter: parent.verticalCenter
         }
-
         opacity: root.isSelected ? 1 : 0
-        font {
-            pixelSize: root.width / 5
-            bold: true
-        }
-
         text: root.name
+        font.pixelSize: root.width / 6
+        font.bold: true
         Behavior on opacity {
             NumberAnimation {
                 duration: root.translationInterval

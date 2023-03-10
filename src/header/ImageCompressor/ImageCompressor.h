@@ -38,6 +38,9 @@ private:
     // process
     bool waitProcess();
 
+    // post-process
+    bool garbageCollect();
+
 private:
     const QString m_pngFileName;
     QProcess m_process;

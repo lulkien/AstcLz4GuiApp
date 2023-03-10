@@ -1,4 +1,5 @@
 #include "ApplicationModel.h"
+#include "ApplicationSettings.h"
 #include "Events.h"
 
 #include <QDateTime>
@@ -26,17 +27,20 @@ void ApplicationModel::setFile(const QString &filePath)
     setTotalFound(1);
 }
 
-void ApplicationModel::printQmlLogWithTime(QString logData)
+void ApplicationModel::printQmlLog(Events::LogLevel level, QString logData)
 {
-    QTime now = QTime::currentTime();
-    QString formatedTime = now.toString("[hh:mm:ss.zzz]<br>");
-    logData = formatedTime + logData;
-    emit reqPrintQmlLog(logData);
+    if (static_cast<int>(level) >= SETTINGS.logLevel())
+    {
+        QTime now = QTime::currentTime();
+        QString formatedTime = now.toString("[hh:mm:ss.zzz]<br>");
+        logData = formatedTime + logData;
+        emit reqPrintQmlLog(logData);
+    }
 }
 
-void ApplicationModel::printQmlLog(QString logData)
+void ApplicationModel::printQmlLogSeparator()
 {
-    emit reqPrintQmlLog(logData);
+    emit reqPrintQmlLog(QLatin1String("---------------------------------"));
 }
 
 void ApplicationModel::clearQmlLog()
@@ -155,7 +159,7 @@ ApplicationModel::ApplicationModel()
     , m_successCount    { 0 }
     , m_failureCount    { 0 }
     , m_isRunable       { true }
-    , m_currentTab      { static_cast<int>(Events::SETUP_SCREEN) }
+    , m_currentTab      { static_cast<int>(Events::MAIN_SCREEN) }
     , m_backupDir       { "" }
     , m_resultDir       { "" }
 {

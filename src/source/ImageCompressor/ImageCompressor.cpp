@@ -1,7 +1,7 @@
 ﻿#include "ImageCompressor.h"
 #include "Utilities.h"
 #include "Common.h"
-#include "Settings.h"
+#include "ApplicationSettings.h"
 #include "ApplicationModel.h"
 
 #include <QFileInfo>
@@ -14,8 +14,8 @@ ImageCompressor::ImageCompressor(const QString &pngFileName)
     , m_isTerminated    { false }
 {
     INFO << "Construct an ImageProcessor:" << pngFileName;
-    MODEL.printQmlLog(QLatin1String("---------------------------------"));
-    MODEL.printQmlLogWithTime(QString("Start process: <b>%1<\b>").arg(m_pngFileName));
+    MODEL.printQmlLogSeparator();
+    MODEL.printQmlLog(Events::QML_WARN, QString("Start process: <b>%1<\b>").arg(m_pngFileName));
 }
 
 bool ImageCompressor::compress()
@@ -34,8 +34,7 @@ bool ImageCompressor::compress()
         return false;
     }
 
-    const QString normalizedFileName = QString("%1/%2.normalized.png")
-            .arg(info.absolutePath(), info.completeBaseName());
+    const QString normalizedFileName = Utilities::normalizedFileName(m_pngFileName);
     const QString astcFilename = Utilities::astcFileName(m_pngFileName);
 
     if (!createNormalizedImage(normalizedFileName, astcFilename))
@@ -56,23 +55,31 @@ bool ImageCompressor::compress()
     if (!runLz4Compress(astcFilename))
         return false;
 
-    MODEL.printQmlLogWithTime(QLatin1String("Completed."));
+    MODEL.printQmlLog(Events::QML_WARN, QLatin1String("Completed."));
+    garbageCollect();
     return true;
 }
 
 bool ImageCompressor::createNormalizedImage(const QString &normalizedFileName, const QString &astcFileName)
 {
-    MODEL.printQmlLogWithTime(QLatin1String("Normalizing..."));
-    if (SETTINGS.useBackup() && QFile::exists(normalizedFileName))
+    MODEL.printQmlLog(Events::QML_INFO, QLatin1String("Normalizing..."));
+    WARN << normalizedFileName
+            + " | "
+            + astcFileName
+            + " | "
+            + (SETTINGS.useBackup() ? "true" : "false");
+    WARN << QFileInfo(normalizedFileName).isFile();
+
+    if (SETTINGS.useBackup() && QFileInfo(normalizedFileName).isFile())
     {
-        MODEL.printQmlLogWithTime(QLatin1String("Normalized image found, skip normalize process."));
+        MODEL.printQmlLog(Events::QML_DEBUG, QLatin1String("Normalized image found, skip normalize process."));
         return true;
     }
 
     QImage image;
     if (!image.load(m_pngFileName, "png"))
     {
-        MODEL.printQmlLogWithTime(QLatin1String("Cannot load image."));
+        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Cannot load image."));
         return false;
     }
 
@@ -91,17 +98,15 @@ bool ImageCompressor::createNormalizedImage(const QString &normalizedFileName, c
 
     if (!exportImage(image, normalizedFileName))
     {
-        MODEL.printQmlLogWithTime(QLatin1String("Cannot save image."));
+        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Cannot save image."));
         return false;
     }
 
     // normalized png was regenerated, remove astc and .gz
     const QString headerFileName = Utilities::hdrFileName(astcFileName);
-    const QString gzFileName = Utilities::gzFileName(astcFileName);
     const QString lz4FileName = Utilities::lz4FileName(astcFileName);
 
     bool removeStatus = (Utilities::removeFile(headerFileName)
-                         && Utilities::removeFile(gzFileName)
                          && Utilities::removeFile(lz4FileName)
                          && Utilities::removeFile(astcFileName));
     if (!removeStatus)
@@ -114,13 +119,13 @@ bool ImageCompressor::exportImage(const QImage &image, const QString &exportFile
 {
     if (!image.hasAlphaChannel())
     {
-        MODEL.printQmlLogWithTime(QLatin1String("No alpha channel, skip premultiply process."));
+        MODEL.printQmlLog(Events::QML_DEBUG, QLatin1String("No alpha channel, skip premultiply process."));
         return image.save(exportFileName, "png");
     }
 
     if (image.format() != QImage::Format_ARGB32)
     {
-        MODEL.printQmlLogWithTime(QLatin1String("Wrong format."));
+        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Wrong format."));
         return false;
     }
 
@@ -129,7 +134,7 @@ bool ImageCompressor::exportImage(const QImage &image, const QString &exportFile
 
     if (!image.save(exportFileName, "png"))
     {
-        MODEL.printQmlLogWithTime(QLatin1String("Cannot save image."));
+        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Cannot save image."));
         return false;
     }
 
@@ -168,7 +173,7 @@ bool ImageCompressor::premultiplyImage(const QString &fileName)
 
 process_flow_ctrl ImageCompressor::convert_png_to_premult_bitmap(const QString &pngFileName, const QString &bmpFileName)
 {
-    MODEL.printQmlLogWithTime(QLatin1String("Premultiplying..."));
+    MODEL.printQmlLog(Events::QML_INFO, QLatin1String("Premultiplying..."));
     if (!pngFileName.endsWith(".png") || !bmpFileName.endsWith(".bmp"))
     {
         WARN << "Invalid PNG of BMP filename:" << pngFileName << bmpFileName;
@@ -195,7 +200,7 @@ process_flow_ctrl ImageCompressor::convert_png_to_premult_bitmap(const QString &
 
     if (m_process.exitCode() != 0)
     {
-        MODEL.printQmlLogWithTime(QLatin1String("Cannot pre-multiply image."));
+        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Cannot premultiply image."));
         return p_failure;
     }
 
@@ -213,19 +218,19 @@ bool ImageCompressor::convert_premult_bitmap_to_png(const QString &bmpFileName, 
     QImage image;
     if (!image.load(bmpFileName, "bmp"))
     {
-        MODEL.printQmlLogWithTime(QString("Error loading %1").arg(FILE_NAME(bmpFileName)));
+        MODEL.printQmlLog(Events::QML_FATAL, QString("Error loading %1").arg(FILE_NAME(bmpFileName)));
         return false;
     }
 
     if (!image.save(pngFileName, "png"))
     {
-        MODEL.printQmlLogWithTime(QString("Error saving %1").arg(FILE_NAME(bmpFileName)));
+        MODEL.printQmlLog(Events::QML_FATAL, QString("Error saving %1").arg(FILE_NAME(bmpFileName)));
         return false;
     }
 
     if (!QFile::remove(bmpFileName))
     {
-        MODEL.printQmlLogWithTime(QString("Can't remove %1").arg(FILE_NAME(bmpFileName)));
+        MODEL.printQmlLog(Events::QML_FATAL, QString("Can't remove %1").arg(FILE_NAME(bmpFileName)));
         return false;
     }
     return true;
@@ -233,14 +238,14 @@ bool ImageCompressor::convert_premult_bitmap_to_png(const QString &bmpFileName, 
 
 process_flow_ctrl ImageCompressor::runAstcEncoder(const QString &normalizedFileName, const QString &astcFileName)
 {
-    MODEL.printQmlLogWithTime(QLatin1String("ASTC encoding..."));
+    MODEL.printQmlLog(Events::QML_INFO, QLatin1String("ASTC encoding..."));
     const QString backupAstcFileName = Utilities::backupAstcFileName(astcFileName);
     bool useBackupAstc = false;
     if (SETTINGS.useBackup())
     {
         if (QFile::exists(astcFileName))
         {
-            MODEL.printQmlLogWithTime(QLatin1String("Old ASTC file found, skip ASTC encoder."));
+            MODEL.printQmlLog(Events::QML_DEBUG, QLatin1String("Old ASTC file found, skip ASTC encoder."));
             return p_success;
         }
 
@@ -249,7 +254,7 @@ process_flow_ctrl ImageCompressor::runAstcEncoder(const QString &normalizedFileN
             function_flow_ctrl flag = retrieveAstcFromBackup(backupAstcFileName, astcFileName);
             switch (flag) {
             case f_success:
-                MODEL.printQmlLogWithTime(QLatin1String("Backup ASTC file found, skip ASTC encoder."));
+                MODEL.printQmlLog(Events::QML_DEBUG, QLatin1String("Backup ASTC file found, skip ASTC encoder."));
                 useBackupAstc = true;
                 break;
             case f_failure:
@@ -265,7 +270,6 @@ process_flow_ctrl ImageCompressor::runAstcEncoder(const QString &normalizedFileN
 
     // old gz/lz4/header file name
     const QString headerFileName = Utilities::hdrFileName(astcFileName);
-    const QString gzFileName = Utilities::gzFileName(astcFileName);
     const QString lz4FileName = Utilities::lz4FileName(astcFileName);
 
     // If not use backup file -> gen astc file from png
@@ -289,7 +293,7 @@ process_flow_ctrl ImageCompressor::runAstcEncoder(const QString &normalizedFileN
 
         if (m_process.exitCode() != 0)
         {
-            MODEL.printQmlLogWithTime(QLatin1String("ASTC encoder fail to start."));
+            MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("ASTC encoder fail to start."));
             return p_failure;
         }
 
@@ -298,7 +302,6 @@ process_flow_ctrl ImageCompressor::runAstcEncoder(const QString &normalizedFileN
             backupAstcFile(astcFileName, backupAstcFileName);
 
         bool removeStatus = (Utilities::removeFile(headerFileName)
-                             && Utilities::removeFile(gzFileName)
                              && Utilities::removeFile(lz4FileName));
         if (!removeStatus)
             return p_failure;
@@ -307,7 +310,7 @@ process_flow_ctrl ImageCompressor::runAstcEncoder(const QString &normalizedFileN
     QFile astcFile(astcFileName);
     if (!astcFile.open(QFile::ReadOnly))
     {
-        MODEL.printQmlLogWithTime(QLatin1String("Cannot read ASTC file."));
+        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Cannot read ASTC file."));
         WARN << "Cannot read ASTC file:" << astcFileName;
         return p_failure;
     }
@@ -319,13 +322,13 @@ process_flow_ctrl ImageCompressor::runAstcEncoder(const QString &normalizedFileN
     QFile headerFile(headerFileName);
     if (!headerFile.open(QFile::WriteOnly))
     {
-        MODEL.printQmlLogWithTime(QLatin1String("Cannot write ASTC file."));
+        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Cannot write ASTC file."));
         WARN << "Cannot write ASTC file:" << astcFileName;
         return p_failure;
     }
     if (headerFile.write(astcRawData.constData(), ASTCENC_HEADER_LENGTH) != ASTCENC_HEADER_LENGTH)
     {
-        MODEL.printQmlLogWithTime(QLatin1String("Cannot write ASTC header file."));
+        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Cannot write ASTC header file."));
         WARN << "Cannot write ASTC header file:" << headerFileName;
         return p_failure;
     }
@@ -334,14 +337,14 @@ process_flow_ctrl ImageCompressor::runAstcEncoder(const QString &normalizedFileN
     // Overwrite ASTC file
     if (!astcFile.open(QFile::WriteOnly | QFile::Truncate))
     {
-        MODEL.printQmlLogWithTime(QLatin1String("Cannot overwrite ASTC file."));
+        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Cannot overwrite ASTC file."));
         WARN << "Cannot overwrite ASTC file:" << astcFileName;
         return p_failure;
     }
     int dataSize = astcRawData.size() - ASTCENC_HEADER_LENGTH;
     if (astcFile.write(astcRawData.constData() + ASTCENC_HEADER_LENGTH, dataSize) != dataSize)
     {
-        MODEL.printQmlLogWithTime(QLatin1String("Cannot write ASTC file."));
+        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Cannot write ASTC file."));
         WARN << "Cannot write ASTC file:" << astcFileName;
         return p_failure;
     }
@@ -372,12 +375,12 @@ function_flow_ctrl ImageCompressor::retrieveAstcFromBackup(const QString &backup
 
 void ImageCompressor::backupAstcFile(const QString &astcFileName, const QString &backupAstcFileName)
 {
-    MODEL.printQmlLogWithTime(QLatin1String("Backupping ASTC file..."));
+    MODEL.printQmlLog(Events::QML_INFO, QLatin1String("Backupping ASTC file..."));
     QFile astcFile(astcFileName);
     Utilities::removeFile(backupAstcFileName);
     if (!astcFile.copy(backupAstcFileName))
     {
-        MODEL.printQmlLogWithTime(QLatin1String("Cannot backup ASTC file"));
+        MODEL.printQmlLog(Events::QML_WARN, QLatin1String("Cannot backup ASTC file"));
         WARN << "Cannot backup ASTC file:" << astcFileName;
     }
     else
@@ -389,10 +392,10 @@ void ImageCompressor::backupAstcFile(const QString &astcFileName, const QString 
 
 bool ImageCompressor::runLz4Compress(const QString &astcFileName)
 {
-    MODEL.printQmlLogWithTime(QLatin1String("LZ4 compressing..."));
+    MODEL.printQmlLog(Events::QML_INFO, QLatin1String("LZ4 compressing..."));
     if (!QFile::exists(astcFileName))
     {
-        MODEL.printQmlLogWithTime(QLatin1String("ASTC file not found."));
+        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("ASTC file not found."));
         WARN << astcFileName << " not found";
         return false;
     }
@@ -413,7 +416,7 @@ bool ImageCompressor::runLz4Compress(const QString &astcFileName)
     // read input data
     if (!inputFile.open(QFile::ReadOnly))
     {
-        MODEL.printQmlLogWithTime(QLatin1String("Cannot read ASTC file."));
+        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Cannot read ASTC file."));
         WARN << "Cannot open file" << astcFileName << "to read";
         return false;
     }
@@ -426,7 +429,7 @@ bool ImageCompressor::runLz4Compress(const QString &astcFileName)
 
     if (inputBufferSize < 20)
     {
-        MODEL.printQmlLogWithTime(QLatin1String("Input data is too small."));
+        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Input data is too small."));
         WARN << "Input data is small.(must be > 20 bytes)";
         return false;
     }
@@ -443,7 +446,7 @@ bool ImageCompressor::runLz4Compress(const QString &astcFileName)
     // write to file
     if (!outputFile.open(QFile::WriteOnly))
     {
-        MODEL.printQmlLogWithTime(QLatin1String("Cannot compress ASTC file."));
+        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Cannot compress ASTC file."));
         delete[] outputBuffer;
         return false;
     }
@@ -475,5 +478,12 @@ bool ImageCompressor::waitProcess()
         }
     }
     return true;
+}
+
+bool ImageCompressor::garbageCollect()
+{
+    INFO << "Remove headless ASTC file";
+    QString astcFileName = Utilities::astcFileName(m_pngFileName);
+    return Utilities::removeFile(astcFileName);
 }
 

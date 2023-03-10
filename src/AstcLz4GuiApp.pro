@@ -24,9 +24,9 @@ SOURCES += \
         source/Common/Utilities.cpp \
         source/Controller/ApplicationEngine.cpp \
         source/Controller/ProcessWorker.cpp \
-        source/Controller/Settings.cpp \
         source/ImageCompressor/ImageCompressor.cpp \
         source/Model/ApplicationModel.cpp \
+        source/Model/ApplicationSettings.cpp \
         source/Model/Events.cpp \
         source/main.cpp
 
@@ -51,9 +51,9 @@ HEADERS += \
     header/Common/Utilities.h \
     header/Controller/ApplicationEngine.h \
     header/Controller/ProcessWorker.h \
-    header/Controller/Settings.h \
     header/ImageCompressor/ImageCompressor.h \
     header/Model/ApplicationModel.h \
+    header/Model/ApplicationSettings.h \
     header/Model/Events.h
 
 LIBS += -L"/usr/local/lib" -llz4

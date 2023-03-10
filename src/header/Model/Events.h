@@ -21,6 +21,23 @@ public:
     };
     Q_ENUM(ScreenID)
 
+    enum LogLevel {
+        QML_DEBUG = 0,
+        QML_INFO,
+        QML_WARN,
+        QML_FATAL,
+    };
+    Q_ENUM(LogLevel)
+
+    enum Resolutions {
+        RES_640X480,
+        RES_800X600,
+        RES_960X720,
+        RES_1024X768,
+        RES_1280X960,
+    };
+    Q_ENUM(Resolutions)
+
     explicit Events(QObject *parent = nullptr);
 
 public slots:

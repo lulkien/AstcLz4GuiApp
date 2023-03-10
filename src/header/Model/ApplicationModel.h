@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include "Events.h"
 
 #define MODEL ApplicationModel::instance()
 
@@ -43,8 +44,8 @@ public:
     void setListFiles(const QStringList &list);
     void setFile(const QString &filePath);
 
-    void printQmlLogWithTime(QString logData);
-    void printQmlLog(QString logData);
+    void printQmlLog(Events::LogLevel level, QString logData);
+    void printQmlLogSeparator();
     void clearQmlLog();
 
     void setBackupDir(const QString &dir);

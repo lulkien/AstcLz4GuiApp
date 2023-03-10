@@ -32,7 +32,8 @@ private:
     void verifyInputPath(const QString &path);
 
     bool makeDestDirectory(const QString &srcDir);
-    bool createDir(const QString &path);
+    bool makeBackupDir(const QString &path);
+    bool makeResultDir(const QString &path);
 
 
 private slots:

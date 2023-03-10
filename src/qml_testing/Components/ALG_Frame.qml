@@ -9,14 +9,12 @@ Item {
     property int borderSize:    1
     property bool border:       true
 
-    Text {
+    ALG_Text {
         id: frameID
-        anchors {
-            verticalCenter: root.top
-            horizontalCenter: root.horizontalCenter
-        }
-
+        anchors.verticalCenter: root.top
+        anchors.horizontalCenter: root.horizontalCenter
         text: ""
+        font.pixelSize: 15
     }
 
     Rectangle {

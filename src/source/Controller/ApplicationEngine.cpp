@@ -1,6 +1,6 @@
 #include "ApplicationEngine.h"
 #include "ApplicationModel.h"
-#include "Settings.h"
+#include "ApplicationSettings.h"
 #include "Common.h"
 
 #include <QQmlContext>
@@ -77,7 +77,7 @@ void ApplicationEngine::loadImages()
     else
     {
         MODEL.setIsScanning(true);
-        MODEL.printQmlLogWithTime("Loaded file: " + MODEL.sourcePath());
+        MODEL.printQmlLog(Events::QML_INFO, "Loaded file: " + MODEL.sourcePath());
         MODEL.setFile(MODEL.sourcePath());
         MODEL.setIsScanning(false);
     }
@@ -88,7 +88,7 @@ void ApplicationEngine::genImages()
     INFO;
     if (MODEL.backupDir().isEmpty() || MODEL.resultDir().isEmpty())
     {
-        MODEL.printQmlLogWithTime(QLatin1String("Backup directory or result directory not found"));
+        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Backup directory or result directory not found"));
         return;
     }
     emit requestStartProcessImages();
@@ -100,25 +100,25 @@ QStringList ApplicationEngine::scanAllPngFromDirectory(const QString &dir)
 
     if (!makeDestDirectory(dir))
     {
-        MODEL.printQmlLogWithTime(QLatin1String("Cannot make destination directory."));
+        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Cannot make destination directory."));
         MODEL.setIsRunable(false);
         return list;
     }
 
     // scan all images file after confirm destination directory is made
     QDirIterator iter(dir, QStringList() << "*.png" << "*.PNG", QDir::Files, QDirIterator::Subdirectories);
-    MODEL.printQmlLogWithTime(QString("Scan directory: <b>%1</b>").arg(dir));
+    MODEL.printQmlLog(Events::QML_WARN, QString("Scan directory: <b>%1</b>").arg(dir));
     while (iter.hasNext())
     {
         QString found = iter.next();
         if (!found.endsWith(".normalized.png"))
         {
-            MODEL.printQmlLogWithTime("Found: " + found);
+            MODEL.printQmlLog(Events::QML_INFO, QString("Found: %1").arg(found));
             list << found;
         }
     }
 
-    MODEL.printQmlLogWithTime(QString("Total found: %1 image(s)").arg(list.count()));
+    MODEL.printQmlLog(Events::QML_WARN, QString("Total found: %1 image(s)").arg(list.count()));
     MODEL.setIsRunable(true);
     return list;
 }
@@ -186,9 +186,11 @@ bool ApplicationEngine::makeDestDirectory(const QString &srcDir)
     // Create parent backup and result dir
     QString backupDir = srcDir + QLatin1String("_backup");
     QString resultDir = srcDir + QLatin1String("_result");
-    if (!createDir(backupDir))
+
+    if (!makeBackupDir(backupDir))
         return false;
-    if (!createDir(resultDir))
+
+    if (!makeResultDir(resultDir))
         return false;
     MODEL.setBackupDir(backupDir);
     MODEL.setResultDir(resultDir);
@@ -203,7 +205,7 @@ bool ApplicationEngine::makeDestDirectory(const QString &srcDir)
         QString backup = QString(found).insert(srcDir.length(), "_backup");
         if (!QDir().mkpath(backup))
         {
-            MODEL.printQmlLogWithTime("Cannot make path" + backup);
+            MODEL.printQmlLog(Events::QML_FATAL, QString("Cannot make path %1").arg(backup));
             return false;
         }
         DEBUG << "Make backup directory:" << backup;
@@ -211,7 +213,7 @@ bool ApplicationEngine::makeDestDirectory(const QString &srcDir)
         QString result = QString(found).insert(srcDir.length(), "_result");
         if (!QDir().mkpath(result))
         {
-            MODEL.printQmlLogWithTime("Cannot make path" + backup);
+            MODEL.printQmlLog(Events::QML_FATAL, QString("Cannot make path %1").arg(result));
             return false;
         }
         DEBUG << "Make result directory:" << result;
@@ -219,7 +221,29 @@ bool ApplicationEngine::makeDestDirectory(const QString &srcDir)
     return true;
 }
 
-bool ApplicationEngine::createDir(const QString &path)
+bool ApplicationEngine::makeBackupDir(const QString &path)
+{
+    QFileInfo info(path);
+    if (info.isFile() && !QFile::remove(path))
+    {
+        WARN << path << "is an existed file and cannot remove";
+        return false;
+    }
+    if (info.isDir())
+    {
+        if (!info.isWritable() || !info.isReadable())
+        {
+            WARN << "Permission denied";
+            return false;
+        }
+        return true;
+    }
+
+    WARN << "Cannot regconize" << path << ", write backup in to input directory";
+    return true;
+}
+
+bool ApplicationEngine::makeResultDir(const QString &path)
 {
     QFileInfo info(path);
     if (info.isDir() && !QDir(path).removeRecursively())

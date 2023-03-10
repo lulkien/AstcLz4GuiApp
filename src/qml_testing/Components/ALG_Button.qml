@@ -14,7 +14,7 @@ Rectangle {
     border.width: 2
     clip: true
 
-    Text {
+    ALG_Text {
         id: textBtn
         anchors.centerIn: parent
         width: parent.width
