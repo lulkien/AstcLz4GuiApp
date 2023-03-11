@@ -239,6 +239,6 @@ Item {
     }
 
     Component.onCompleted: {
-        textInput.text = "/home/ark/Pictures/test_1"
+        textInput.text = "/home/ark/Pictures/heavy"
     }
 }
