@@ -11,6 +11,7 @@ Item {
 
     Loader {
         id: mainScreenLoader
+        asynchronous: true
         anchors.fill: parent
         visible: AppModel.currentTab === QmlEvents.MAIN_SCREEN
         source: "qrc:/qml/qml_testing/Screens/ALG_MainScreen.qml"
@@ -18,6 +19,7 @@ Item {
 
     Loader {
         id: setupScreenLoader
+        asynchronous: true
         anchors.fill: parent
         visible: AppModel.currentTab === QmlEvents.SETUP_SCREEN
         source: "qrc:/qml/qml_testing/Screens/ALG_SetupScreen.qml"

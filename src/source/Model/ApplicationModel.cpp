@@ -1,6 +1,7 @@
 #include "ApplicationModel.h"
 #include "ApplicationSettings.h"
 #include "Events.h"
+#include "Common.h"
 
 #include <QDateTime>
 #include <QFileInfo>
@@ -33,7 +34,8 @@ void ApplicationModel::printQmlLog(Events::LogLevel level, QString logData)
     if (static_cast<int>(level) >= SETTINGS.logLevel())
     {
         QTime now = QTime::currentTime();
-        QString formatedTime = now.toString("[hh:mm:ss.zzz]<br>");
+        QString formatedTime = now.toString("[ %1 ][ hh:mm:ss.zzz ]<br>")
+                .arg(LOG_LEVEL.at(static_cast<int>(level)));
         logData = formatedTime + logData;
         emit reqPrintQmlLog(logData);
     }
@@ -41,7 +43,8 @@ void ApplicationModel::printQmlLog(Events::LogLevel level, QString logData)
 
 void ApplicationModel::printQmlLogSeparator()
 {
-    emit reqPrintQmlLog(QLatin1String("---------------------------------"));
+    if (SETTINGS.logLevel() < static_cast<int>(Events::QML_FATAL))
+        emit reqPrintQmlLog(QLatin1String("---------------------------------"));
 }
 
 void ApplicationModel::clearQmlLog()

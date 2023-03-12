@@ -4,6 +4,6 @@ import QtQuick.Controls 2.12
 CheckBox {
     font {
         pixelSize: 13
-        family: "Hack"
+        family: GUI.globalFont
     }
 }

@@ -9,10 +9,11 @@ Settings &Settings::instance()
 
 Settings::Settings()
     : m_noFlip          { false }
-    , m_useBackup       { false }
     , m_noPremult       { false }
+    , m_useBackup       { false }
     , m_veryfast        { false }
     , m_logLevel        { static_cast<int>(Events::QML_WARN) }
+    , m_resolutionID    { static_cast<int>(Events::RES_800X600) }
 {
 
 }
@@ -30,19 +31,6 @@ void Settings::setNoFlip(bool newNoFlip)
     emit noFlipChanged();
 }
 
-bool Settings::useBackup() const
-{
-    return m_useBackup;
-}
-
-void Settings::setUseBackup(bool newUseBackup)
-{
-    if (m_useBackup == newUseBackup)
-        return;
-    m_useBackup = newUseBackup;
-    emit useBackupChanged();
-}
-
 bool Settings::noPremult() const
 {
     return m_noPremult;
@@ -54,6 +42,19 @@ void Settings::setNoPremult(bool newNoPremult)
         return;
     m_noPremult = newNoPremult;
     emit noPremultChanged();
+}
+
+bool Settings::useBackup() const
+{
+    return m_useBackup;
+}
+
+void Settings::setUseBackup(bool newUseBackup)
+{
+    if (m_useBackup == newUseBackup)
+        return;
+    m_useBackup = newUseBackup;
+    emit useBackupChanged();
 }
 
 bool Settings::veryfast() const
@@ -80,4 +81,17 @@ void Settings::setLogLevel(int newLogLevel)
         return;
     m_logLevel = newLogLevel;
     emit logLevelChanged();
+}
+
+int Settings::resolutionID() const
+{
+    return m_resolutionID;
+}
+
+void Settings::setResolutionID(int newResolutionID)
+{
+    if (m_resolutionID == newResolutionID)
+        return;
+    m_resolutionID = newResolutionID;
+    emit resolutionIDChanged();
 }

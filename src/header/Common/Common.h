@@ -2,6 +2,7 @@
 #define COMMON_H
 
 #include <QDebug>
+#include <QStringList>
 
 #define DEBUG   qDebug().noquote() << "[DEBUG][" << __FUNCTION__ << "][" << __LINE__ << "]"
 #define INFO    qInfo().noquote() << "[INFO][" << __FUNCTION__ << "][" << __LINE__ << "]"
@@ -31,5 +32,12 @@ enum process_flow_ctrl {
     p_success       = 0,
     p_failure       = 1,
 };
+
+namespace {
+QStringList LOG_LEVEL = QStringList() << QLatin1String("DEBUG")
+                                      << QLatin1String("INFO")
+                                      << QLatin1String("WARN")
+                                      << QLatin1String("FATAL");
+}
 
 #endif // COMMON_H

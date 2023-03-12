@@ -1,6 +1,8 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
+import QmlCustomType 1.0
 import "../Components"
+import "../Components/Common"
 
 Item {
     id: root
@@ -26,44 +28,44 @@ Item {
         frameText.text: "Compression settings"
 
         Item {
-            id: astcSettingsColumn
+            id: astcSettingLayout
             anchors.margins: privateProperties.globalMargins / 2
             anchors.fill: parent
             Column {
                 spacing: 5
                 ALG_CheckBox {
-                    width: astcSettingsColumn.width
-                    checkState: AstcSettings.noFlip ? Qt.Checked : Qt.Unchecked
+                    width: astcSettingLayout.width
+                    checkState: AppSettings.noFlip ? Qt.Checked : Qt.Unchecked
                     text: "No flip image."
                     onClicked: {
-                        AstcSettings.noFlip = !AstcSettings.noFlip
+                        AppSettings.noFlip = !AppSettings.noFlip
                     }
                 }
 
                 ALG_CheckBox {
-                    width: astcSettingsColumn.width
-                    checkState: AstcSettings.noPremult ? Qt.Checked : Qt.Unchecked
+                    width: astcSettingLayout.width
+                    checkState: AppSettings.noPremult ? Qt.Checked : Qt.Unchecked
                     text: "No premultiply image."
                     onClicked: {
-                        AstcSettings.noPremult = !AstcSettings.noPremult
+                        AppSettings.noPremult = !AppSettings.noPremult
                     }
                 }
 
                 ALG_CheckBox {
-                    width: astcSettingsColumn.width
-                    checkState: AstcSettings.useBackup ? Qt.Checked : Qt.Unchecked
+                    width: astcSettingLayout.width
+                    checkState: AppSettings.useBackup ? Qt.Checked : Qt.Unchecked
                     text: "Use backup/pregenerated ASTC."
                     onClicked: {
-                        AstcSettings.useBackup = !AstcSettings.useBackup
+                        AppSettings.useBackup = !AppSettings.useBackup
                     }
                 }
 
                 ALG_CheckBox {
-                    width: astcSettingsColumn.width
-                    checkState: AstcSettings.veryfast ? Qt.Checked : Qt.Unchecked
+                    width: astcSettingLayout.width
+                    checkState: AppSettings.veryfast ? Qt.Checked : Qt.Unchecked
                     text: "Use veryfast compression."
                     onClicked: {
-                        AstcSettings.veryfast = !AstcSettings.veryfast
+                        AppSettings.veryfast = !AppSettings.veryfast
                     }
                 }
             }
@@ -82,6 +84,61 @@ Item {
         width: (privateProperties.drawWidth - privateProperties.globalMargins) / 2
         height: (privateProperties.drawHeight - privateProperties.globalMargins) * 2 / 3
         frameText.text: "Application settings"
+
+        Item {
+            id: appSettingsColumn
+            anchors.margins: privateProperties.globalMargins
+            anchors.fill: parent
+            Column {
+                spacing: 5
+                ALG_Slider {
+                    id: resoSlider
+                    width: appSettingsColumn.width
+                    label {
+                        text: "Resolution: <b>" + getAliasedString(AppSettings.resolutionID) + "<\b>"
+                        textFormat: Text.RichText
+                    }
+                    slider {
+                        from: QmlEvents.RES_640X480
+                        to: QmlEvents.RES_1280X960
+                        value: AppSettings.resolutionID
+                        live: false
+                        snapMode: Slider.SnapAlways
+                    }
+                    aliasedString: [ "640x480", "800x600", "960x720", "1024x768", "1280x960" ]
+                }
+
+                ALG_Slider {
+                    id: logSlider
+                    width: appSettingsColumn.width
+                    label {
+                        text: "Log level: <b>" + getAliasedString(AppSettings.logLevel) + "<\b>"
+                        textFormat: Text.RichText
+                    }
+                    slider {
+                        from: QmlEvents.QML_DEBUG
+                        to: QmlEvents.QML_FATAL
+                        value: AppSettings.logLevel
+                        live: false
+                        snapMode: Slider.SnapAlways
+                    }
+                    aliasedString: [ "DEBUG", "INFO", "WARN", "FATAL" ]
+                }
+
+                ALG_Button {
+                    id: save
+                    width: 50
+                    height: 50
+                    label.text: "Save"
+                    label.font.pixelSize: 12
+                    label.font.bold: false
+                    onClicked: {
+                        AppSettings.resolutionID = resoSlider.value
+                        AppSettings.logLevel = logSlider.value
+                    }
+                }
+            }
+        }
     }
 
     ALG_Frame {
@@ -95,5 +152,12 @@ Item {
         width: privateProperties.drawWidth
         height: (privateProperties.drawHeight - privateProperties.globalMargins) * 1 / 3
         frameText.text: "Extensions"
+    }
+
+    onVisibleChanged:  {
+        if (visible) {
+            console.warn("Reload all settings")
+            resoSlider.slider.value = AppSettings.resolutionID
+        }
     }
 }

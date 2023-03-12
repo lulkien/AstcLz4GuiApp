@@ -11,9 +11,10 @@
         <file>qml_testing/Screens/ALG_SetupScreen.qml</file>
         <file>qml_testing/Components/ALG_Loading.qml</file>
         <file>qml_testing/Components/ALG_Frame.qml</file>
-        <file>qml_testing/Components/ALG_Text.qml</file>
-        <file>qml_testing/Components/ALG_CheckBox.qml</file>
-        <file>qml_testing/Components/ALG_TextInput.qml</file>
+        <file>qml_testing/Components/Common/ALG_Text.qml</file>
+        <file>qml_testing/Components/Common/ALG_CheckBox.qml</file>
+        <file>qml_testing/Components/Common/ALG_TextInput.qml</file>
+        <file>qml_testing/Components/ALG_Slider.qml</file>
     </qresource>
     <qresource prefix="/images">
         <file>resources/png/home.png</file>

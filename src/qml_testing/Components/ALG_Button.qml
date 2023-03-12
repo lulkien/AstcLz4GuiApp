@@ -1,10 +1,11 @@
 import QtQuick 2.0
+import "Common"
 
 Rectangle {
     id: rootBtn
 
     property bool isEnabled: true
-    property alias label: textBtn.text
+    property alias label: textBtn
 
     signal clicked()
 

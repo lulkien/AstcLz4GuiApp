@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QmlCustomType 1.0
 import "../Components"
+import "../Components/Common"
 
 Item {
     id: root
@@ -88,7 +89,7 @@ Item {
             width: privateProperties.globalButtonSize
             height: privateProperties.globalButtonSize
             isEnabled: privateProperties.allowScan
-            label: privateProperties.inputPath.length === 0 ? "Open" : "Load"
+            label.text: privateProperties.inputPath.length === 0 ? "Open" : "Load"
             onClicked: {
                 if (AppModel.sourcePathFound)
                     EventHandler.qmlSendEvent(QmlEvents.REQ_LOAD_IMAGES)
@@ -106,7 +107,7 @@ Item {
             width: privateProperties.globalButtonSize
             height: privateProperties.globalButtonSize
             isEnabled: privateProperties.allowProcess
-            label: "Run"
+            label.text: "Run"
             onClicked: {
                 EventHandler.qmlSendEvent(QmlEvents.REQ_GEN_IMAGE)
             }
@@ -224,14 +225,16 @@ Item {
 
         Connections {
             target: AppModel
-            onReqPrintQmlLog: {
+            function onReqPrintQmlLog(logData) {
+//            onReqPrintQmlLog: {
                 if (log_model.count >= 100)
                     log_model.remove(0)
                 log_model.append({ _data: logData })
                 log_view.positionViewAtEnd()
             }
 
-            onReqClearQmlLog: {
+            function onReqClearQmlLog() {
+//            onReqClearQmlLog: {
                 log_model.clear()
                 log_view.positionViewAtBeginning()
             }

@@ -66,12 +66,12 @@ void ImageCompressor::initPath()
     m_astcBackupPath    = Utilities::modifyPath(m_pngFileName, QLatin1String(""),       QLatin1String(".astc_"),            MODEL.workingDir(),     MODEL.backupDir());
     m_astcHeaderPath    = Utilities::modifyPath(m_pngFileName, QLatin1String(""),       QLatin1String(".astc.header"),      MODEL.workingDir(),     MODEL.resultDir());
     m_astcLz4Path       = Utilities::modifyPath(m_pngFileName, QLatin1String(""),       QLatin1String(".astc.lz4"),         MODEL.workingDir(),     MODEL.resultDir());
-    INFO << m_normalizedPath;
-    INFO << m_premultBmpPath;
-    INFO << m_astcPath;
-    INFO << m_astcBackupPath;
-    INFO << m_astcHeaderPath;
-    INFO << m_astcLz4Path;
+//    INFO << m_normalizedPath;
+//    INFO << m_premultBmpPath;
+//    INFO << m_astcPath;
+//    INFO << m_astcBackupPath;
+//    INFO << m_astcHeaderPath;
+//    INFO << m_astcLz4Path;
 }
 
 bool ImageCompressor::createNormalizedImage()

@@ -28,6 +28,7 @@ SOURCES += \
         source/Model/ApplicationModel.cpp \
         source/Model/ApplicationSettings.cpp \
         source/Model/Events.cpp \
+        source/Model/GUIModel.cpp \
         source/main.cpp
 
 RESOURCES += \
@@ -54,6 +55,7 @@ HEADERS += \
     header/ImageCompressor/ImageCompressor.h \
     header/Model/ApplicationModel.h \
     header/Model/ApplicationSettings.h \
-    header/Model/Events.h
+    header/Model/Events.h \
+    header/Model/GUIModel.h
 
 LIBS += -L"/usr/local/lib" -llz4

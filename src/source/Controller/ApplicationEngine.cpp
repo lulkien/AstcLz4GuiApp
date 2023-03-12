@@ -1,6 +1,7 @@
 #include "ApplicationEngine.h"
 #include "ApplicationModel.h"
 #include "ApplicationSettings.h"
+#include "GUIModel.h"
 #include "Common.h"
 
 #include <QQmlContext>
@@ -44,9 +45,10 @@ void ApplicationEngine::registerQmlType()
 
 void ApplicationEngine::initQmlcontext()
 {
+    rootContext()->setContextProperty("GUI", &GUI_MODEL);
     rootContext()->setContextProperty("EventHandler", &m_eventHandler);
     rootContext()->setContextProperty("AppModel", &MODEL);
-    rootContext()->setContextProperty("AstcSettings", &SETTINGS);
+    rootContext()->setContextProperty("AppSettings", &SETTINGS);
 }
 
 void ApplicationEngine::initConnection()
