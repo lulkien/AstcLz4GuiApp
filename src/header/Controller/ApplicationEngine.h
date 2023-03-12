@@ -20,16 +20,18 @@ private:
     // init
     void registerQmlType();
     void initQmlcontext();
+    void initApplicationConfig();
     void initConnection();
 
     // event handler
     void loadImages();
     void genImages();
+    void verifyInputPath(QString path);
+    void applyNewAppConfig();
 
     // general
     QStringList scanAllPngFromDirectory(const QString &dir);
     QString getCurrentUser();
-    void verifyInputPath(QString path);
 
     bool makeOutputDirectory(const QString &inputDir);
     bool makeBackupDir(const QString &path);

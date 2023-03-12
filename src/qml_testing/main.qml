@@ -6,10 +6,12 @@ import "Screens"
 Window {
     id: root
     visible: true
-    minimumWidth: 800
-    minimumHeight: 600
-    maximumWidth: 800
-    maximumHeight: 600
+    width: GUI.globalWidth
+    height: GUI.globalHeight
+//    minimumWidth: GUI.globalWidth
+//    maximumWidth: GUI.globalWidth
+//    minimumHeight: GUI.globalHeight
+//    maximumHeight: GUI.globalHeight
     title: qsTr("Over-engineering ASTC generator")
 
     ALG_ScreenLoader {

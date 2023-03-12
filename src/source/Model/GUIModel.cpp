@@ -1,6 +1,10 @@
 #include "GUIModel.h"
+#include "ApplicationSettings.h"
+#include "Common.h"
 
-
+QList<int> GLOBAL_WIDTHS =  { 640,  800,  960, 1024, 1280 };
+QList<int> GLOBAL_HEIGHTS = { 480,  600,  720,  768,  960 };
+QList<int> GLOBAL_MARGINS = {  10,   20,   30,   40,   50 };
 
 GUIModel &GUIModel::instance()
 {
@@ -8,30 +12,30 @@ GUIModel &GUIModel::instance()
     return _self;
 }
 
-int GUIModel::windowWidth() const
+int GUIModel::globalWidth() const
 {
-    return m_windowWidth;
+    return m_globalWidth;
 }
 
-void GUIModel::setWindowWidth(int newWindowWidth)
+void GUIModel::setGlobalWidth(int newGlobalWidth)
 {
-    if (m_windowWidth == newWindowWidth)
+    if (m_globalWidth == newGlobalWidth)
         return;
-    m_windowWidth = newWindowWidth;
-    emit windowWidthChanged();
+    m_globalWidth = newGlobalWidth;
+    emit globalWidthChanged();
 }
 
-int GUIModel::windowHeight() const
+int GUIModel::globalHeight() const
 {
-    return m_windowHeight;
+    return m_globalHeight;
 }
 
-void GUIModel::setWindowHeight(int newWindowHeight)
+void GUIModel::setGlobalHeight(int newGlobalHeight)
 {
-    if (m_windowHeight == newWindowHeight)
+    if (m_globalHeight == newGlobalHeight)
         return;
-    m_windowHeight = newWindowHeight;
-    emit windowHeightChanged();
+    m_globalHeight = newGlobalHeight;
+    emit globalHeightChanged();
 }
 
 int GUIModel::globalMargins() const
@@ -60,8 +64,27 @@ void GUIModel::setGlobalFont(const QString &newGlobalFont)
     emit globalFontChanged();
 }
 
+void GUIModel::applySettings()
+{
+    INFO << "Apply new settings";
+    setGlobalWidth(GLOBAL_WIDTHS.at(SETTINGS.resolutionID()));
+    setGlobalHeight(GLOBAL_HEIGHTS.at(SETTINGS.resolutionID()));
+    setGlobalMargins(GLOBAL_MARGINS.at(SETTINGS.resolutionID()));
+}
+
 GUIModel::GUIModel()
-    : m_globalFont { "Hack" }
+    : m_globalWidth     { 800 } // default value
+    , m_globalHeight    { 600 } // default value
+    , m_globalMargins   { 20 }  // default value
+    , m_globalFont      { "Hack" }
 {
 
 }
+
+
+
+
+
+
+
+

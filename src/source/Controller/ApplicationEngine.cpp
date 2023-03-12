@@ -15,6 +15,7 @@ ApplicationEngine::ApplicationEngine()
     m_username = getCurrentUser();
     registerQmlType();
     initQmlcontext();
+    initApplicationConfig();
     initConnection();
 
     m_processWorker.moveToThread(&m_processThread);
@@ -49,6 +50,12 @@ void ApplicationEngine::initQmlcontext()
     rootContext()->setContextProperty("EventHandler", &m_eventHandler);
     rootContext()->setContextProperty("AppModel", &MODEL);
     rootContext()->setContextProperty("AppSettings", &SETTINGS);
+}
+
+void ApplicationEngine::initApplicationConfig()
+{
+    INFO;
+    GUI_MODEL.applySettings();
 }
 
 void ApplicationEngine::initConnection()
@@ -187,6 +194,11 @@ void ApplicationEngine::verifyInputPath(QString path)
     }
 }
 
+void ApplicationEngine::applyNewAppConfig()
+{
+    GUI_MODEL.applySettings();
+}
+
 bool ApplicationEngine::makeOutputDirectory(const QString &inputDir)
 {
     // Create parent backup and result dir
@@ -288,6 +300,9 @@ void ApplicationEngine::onReceivedEvent(int eventId, QByteArray data)
         break;
     case static_cast<int>(Events::REQ_VERIFY_SOURCE):
         verifyInputPath(QString(data));
+        break;
+    case static_cast<int>(Events::REQ_APPLY_APP_CONFIG):
+        applyNewAppConfig();
         break;
     default:
         break;

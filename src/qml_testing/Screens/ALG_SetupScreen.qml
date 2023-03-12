@@ -133,6 +133,7 @@ Item {
                     label.font.pixelSize: 12
                     label.font.bold: false
                     onClicked: {
+                        EventHandler.qmlSendEvent(QmlEvents.REQ_APPLY_APP_CONFIG)
                         AppSettings.resolutionID = resoSlider.value
                         AppSettings.logLevel = logSlider.value
                     }

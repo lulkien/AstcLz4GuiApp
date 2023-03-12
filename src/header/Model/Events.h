@@ -12,6 +12,7 @@ public:
         REQ_GEN_IMAGE,
         REQ_LOAD_IMAGES,
         REQ_VERIFY_SOURCE,
+        REQ_APPLY_APP_CONFIG,
     };
     Q_ENUM(EventID)
 
