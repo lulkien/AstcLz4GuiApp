@@ -22,10 +22,9 @@ Item {
     // color
     property color successColor: "green"
     property color failureColor: "red"
-    property color remainingColor: "lightgray"
-    property color invalidColor: "gray"
+    property color remainingColor: GUI.lightgray
+    property color invalidColor: GUI.gray
     property color borderColor: "black"
-    readonly property string invisible: "transparent"
 
     Rectangle {
         id: successBar
@@ -65,7 +64,7 @@ Item {
     Rectangle {
         id: overlay
         anchors.fill: root
-        color: root.totalCount === 0 ? root.invalidColor : root.invisible
+        color: root.totalCount === 0 ? root.invalidColor : GUI.invisible
         border.color: root.borderColor
     }
 

@@ -25,6 +25,7 @@ class ApplicationModel : public QObject
 
     // for GUI
     Q_PROPERTY(int      currentTab          READ currentTab         WRITE setCurrentTab         NOTIFY currentTabChanged)
+    Q_PROPERTY(int      currentBtnState     READ currentBtnState    WRITE setCurrentBtnState    NOTIFY currentBtnStateChanged)
 
 public:
     static ApplicationModel &instance();
@@ -39,6 +40,7 @@ public:
     QStringList listFiles() const   { return m_listFiles; }
     bool isRunable() const          { return m_isRunable; }
     int currentTab() const          { return m_currentTab; }
+    int currentBtnState() const     { return m_currentBtnState; }
 
     // general
     void setListFiles(const QStringList &list);
@@ -54,7 +56,6 @@ public:
     QString resultDir() const { return m_resultDir; }
     QString workingDir() const;
 
-
 public slots:
     void setIsDirectory(bool isDirectory);
     void setSourcePath(QString sourcePath);
@@ -66,6 +67,7 @@ public slots:
     void setFailureCount(int failureCount);
     void setIsRunable(bool isRunable);
     void setCurrentTab(int currentTab);
+    void setCurrentBtnState(int currentBtnState);
 
 private:
     ApplicationModel();
@@ -85,6 +87,8 @@ signals:
     void reqPrintQmlLog(QString logData);
     void reqClearQmlLog();
 
+    void currentBtnStateChanged(int currentBtnState);
+
 private:
     bool m_isDirectory;
     QString m_sourcePath;
@@ -100,6 +104,7 @@ private:
     QStringList m_listFiles;
     QString m_backupDir;
     QString m_resultDir;
+    int m_currentBtnState;
 };
 
 #endif // APPLICATIONMODEL_H

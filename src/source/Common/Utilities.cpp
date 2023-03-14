@@ -32,7 +32,7 @@ QString Utilities::modifyPath(QString origName, QLatin1String oldSuffix, QLatin1
             && oldPrefix.compare(newPrefix) != 0)
     {
         origName.remove(0, oldPrefix.length());
-        origName.prepend(newPrefix);
+        origName = newPrefix.toString() + origName;
     }
     return origName;
 }

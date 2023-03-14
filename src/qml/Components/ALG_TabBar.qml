@@ -4,18 +4,22 @@ import "Common"
 
 Rectangle {
     id: root
+    color: GUI.lightgray
+    enabled: !(AppModel.isProcessing || AppModel.isScanning)
 
-    width: 100
-    height: 800
-
-    color: "lightgray"
+    Rectangle {
+        anchors.right: parent.right
+        width: 1
+        height: parent.height
+        color: GUI.black
+    }
 
     ALG_TabIndexer {
         id: indexer
 
         width: root.width
         idxerColor: root.color
-        bgColor: "white"
+        bgColor: GUI.whitesmoke
 
         anchors {
             top: parent.top

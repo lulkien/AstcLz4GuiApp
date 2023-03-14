@@ -6,13 +6,16 @@ import "Screens"
 Window {
     id: root
     visible: true
-    width: GUI.globalWidth
-    height: GUI.globalHeight
-//    minimumWidth: GUI.globalWidth
-//    maximumWidth: GUI.globalWidth
-//    minimumHeight: GUI.globalHeight
-//    maximumHeight: GUI.globalHeight
+    width: GUI.defaultWidth
+    height: GUI.defaultHeight
+    minimumWidth: GUI.defaultWidth
+    minimumHeight: GUI.defaultHeight
     title: qsTr("Over-engineering ASTC generator")
+
+    Rectangle {
+        anchors.fill: parent
+        color: GUI.whitesmoke
+    }
 
     ALG_ScreenLoader {
         id: loader
@@ -23,7 +26,7 @@ Window {
 
     ALG_TabBar {
         id: screenBar
-        width: 100
+        width: GUI.globalButtonSize
         height: root.height
     }
 }

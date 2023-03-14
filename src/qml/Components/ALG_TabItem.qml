@@ -27,7 +27,6 @@ Item {
             horizontalCenterOffset: root.isSelected ? ico.selectedHOffset : 0
         }
         antialiasing:  true
-
         sourceSize.width: Math.floor(root.width / 2.5)
         sourceSize.height: Math.floor(root.width / 2.5)
         width: sourceSize.width

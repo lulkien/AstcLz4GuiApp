@@ -21,11 +21,8 @@ Item {
         anchors.top: sliderLabel.bottom
         anchors.topMargin: 5
         width: parent.width
-
-        from: 0
-        to: 1
-        stepSize: 1
-        value: 0
+        height: GUI.globalBarHeight
+        from: 0 ; to: 1 ; stepSize: 1 ; value: 0
     }
 
     function getAliasedString(value) {

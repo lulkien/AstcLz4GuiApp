@@ -1,20 +1,21 @@
 <RCC>
-    <qresource prefix="/qml">
-        <file>qml_testing/Components/ALG_ProgressBar.qml</file>
-        <file>qml_testing/Screens/ALG_MainScreen.qml</file>
-        <file>qml_testing/main.qml</file>
-        <file>qml_testing/Components/ALG_Button.qml</file>
-        <file>qml_testing/Components/ALG_TabBar.qml</file>
-        <file>qml_testing/Components/ALG_TabItem.qml</file>
-        <file>qml_testing/Components/ALG_TabIndexer.qml</file>
-        <file>qml_testing/Screens/ALG_ScreenLoader.qml</file>
-        <file>qml_testing/Screens/ALG_SetupScreen.qml</file>
-        <file>qml_testing/Components/ALG_Loading.qml</file>
-        <file>qml_testing/Components/ALG_Frame.qml</file>
-        <file>qml_testing/Components/Common/ALG_Text.qml</file>
-        <file>qml_testing/Components/Common/ALG_CheckBox.qml</file>
-        <file>qml_testing/Components/Common/ALG_TextInput.qml</file>
-        <file>qml_testing/Components/ALG_Slider.qml</file>
+    <qresource prefix="/">
+        <file>qml/Components/ALG_ProgressBar.qml</file>
+        <file>qml/Screens/ALG_MainScreen.qml</file>
+        <file>qml/main.qml</file>
+        <file>qml/Components/ALG_Button.qml</file>
+        <file>qml/Components/ALG_TabBar.qml</file>
+        <file>qml/Components/ALG_TabItem.qml</file>
+        <file>qml/Components/ALG_TabIndexer.qml</file>
+        <file>qml/Screens/ALG_ScreenLoader.qml</file>
+        <file>qml/Screens/ALG_SetupScreen.qml</file>
+        <file>qml/Components/ALG_Loading.qml</file>
+        <file>qml/Components/ALG_Frame.qml</file>
+        <file>qml/Components/Common/ALG_Text.qml</file>
+        <file>qml/Components/Common/ALG_CheckBox.qml</file>
+        <file>qml/Components/Common/ALG_TextField.qml</file>
+        <file>qml/Components/ALG_Slider.qml</file>
+        <file>qml/Components/Common/ALG_Overlay.qml</file>
     </qresource>
     <qresource prefix="/images">
         <file>resources/png/home.png</file>
@@ -28,5 +29,13 @@
         <file>resources/svg/setup.svg</file>
         <file>resources/svg/user.svg</file>
         <file>resources/png/loading.png</file>
+        <file>resources/png/delete.png</file>
+        <file>resources/png/delele_filled.png</file>
+        <file>resources/png/reload.png</file>
+        <file>resources/png/open.png</file>
+        <file>resources/png/search.png</file>
+        <file>resources/png/start.png</file>
+        <file>resources/png/start_filled.png</file>
+        <file>resources/png/stop.png</file>
     </qresource>
 </RCC>

@@ -16,6 +16,10 @@ public:
     ~ApplicationEngine();
     void startApplication();
 
+    bool cliLoadDirectory(const QString &dir);
+    bool cliLoadImage(const QString &path);
+    void cliGenImage();
+
 private:
     // init
     void registerQmlType();
@@ -27,16 +31,11 @@ private:
     void loadImages();
     void genImages();
     void verifyInputPath(QString path);
-    void applyNewAppConfig();
+    void terminateGenerator();
 
     // general
     QStringList scanAllPngFromDirectory(const QString &dir);
     QString getCurrentUser();
-
-    bool makeOutputDirectory(const QString &inputDir);
-    bool makeBackupDir(const QString &path);
-    bool makeResultDir(const QString &path);
-
 
 private slots:
     void onReceivedEvent(int eventId, QByteArray data);

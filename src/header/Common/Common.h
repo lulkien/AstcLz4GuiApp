@@ -7,6 +7,7 @@
 #define DEBUG   qDebug().noquote() << "[DEBUG][" << __FUNCTION__ << "][" << __LINE__ << "]"
 #define INFO    qInfo().noquote() << "[INFO][" << __FUNCTION__ << "][" << __LINE__ << "]"
 #define WARN    qWarning().noquote() << "[WARN][" << __FUNCTION__ << "][" << __LINE__ << "]"
+#define STDL    qInfo().noquote()
 
 #define STREF_TO_STR(stref)     *(stref.string())
 #define STR_TO_STREF(str)       (QStringRef(&str))

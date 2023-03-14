@@ -13,7 +13,6 @@ Settings::Settings()
     , m_useBackup       { false }
     , m_veryfast        { false }
     , m_logLevel        { static_cast<int>(Events::QML_WARN) }
-    , m_resolutionID    { static_cast<int>(Events::RES_800X600) }
 {
 
 }
@@ -83,15 +82,15 @@ void Settings::setLogLevel(int newLogLevel)
     emit logLevelChanged();
 }
 
-int Settings::resolutionID() const
+bool Settings::clearBackup() const
 {
-    return m_resolutionID;
+    return m_clearBackup;
 }
 
-void Settings::setResolutionID(int newResolutionID)
+void Settings::setClearBackup(bool newClearBackup)
 {
-    if (m_resolutionID == newResolutionID)
+    if (m_clearBackup == newClearBackup)
         return;
-    m_resolutionID = newResolutionID;
-    emit resolutionIDChanged();
+    m_clearBackup = newClearBackup;
+    emit clearBackupChanged();
 }

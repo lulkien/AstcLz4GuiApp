@@ -8,13 +8,20 @@ class ProcessWorker : public QObject
     Q_OBJECT
 public:
     ProcessWorker();
+    void startProcessImages();
 
 public slots:
     void onStartProcessImages();
 
+private:
+    bool createOutputDirectory();
+    bool makeTempDir(const QString &tmpDir);
+    bool makeResultDir(const QString &resultDir);
+
+    void removeTempFiles();
+
 signals:
 
-private:
 
 };
 

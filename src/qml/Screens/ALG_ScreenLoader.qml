@@ -6,7 +6,14 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: "lightgray"
+        color: GUI.lightgray
+    }
+
+    Rectangle {
+        anchors.left: parent.left
+        width: 1
+        height: parent.height
+        color: GUI.black
     }
 
     Loader {
@@ -14,7 +21,7 @@ Item {
         asynchronous: true
         anchors.fill: parent
         visible: AppModel.currentTab === QmlEvents.MAIN_SCREEN
-        source: "qrc:/qml/qml_testing/Screens/ALG_MainScreen.qml"
+        source: "qrc:/qml/Screens/ALG_MainScreen.qml"
     }
 
     Loader {
@@ -22,6 +29,6 @@ Item {
         asynchronous: true
         anchors.fill: parent
         visible: AppModel.currentTab === QmlEvents.SETUP_SCREEN
-        source: "qrc:/qml/qml_testing/Screens/ALG_SetupScreen.qml"
+        source: "qrc:/qml/Screens/ALG_SetupScreen.qml"
     }
 }

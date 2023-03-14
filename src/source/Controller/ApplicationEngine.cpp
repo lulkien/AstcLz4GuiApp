@@ -8,10 +8,11 @@
 #include <QDir>
 #include <QFile>
 #include <QDirIterator>
+#include <QDesktopServices>
 
 ApplicationEngine::ApplicationEngine()
 {
-    INFO;
+    DEBUG;
     m_username = getCurrentUser();
     registerQmlType();
     initQmlcontext();
@@ -24,19 +25,99 @@ ApplicationEngine::ApplicationEngine()
 
 ApplicationEngine::~ApplicationEngine()
 {
-    INFO;
-    if (MODEL.isProcessing())
-    {
-        WARN << "Request terminate ProcessWorker";
-        m_processThread.requestInterruption();
-    }
+    DEBUG;
+    terminateGenerator();
     m_processThread.quit();
     m_processThread.wait();
 }
 
 void ApplicationEngine::startApplication()
 {
-    load(QStringLiteral("qrc:/qml/qml_testing/main.qml"));
+    load(QStringLiteral("qrc:/qml/main.qml"));
+}
+
+bool ApplicationEngine::cliLoadDirectory(const QString &dir)
+{
+    QFileInfo info(dir);
+    if (!info.isDir())
+    {
+        STDL << dir << "is not a directory.";
+        return false;
+    }
+
+    if (info.owner() != m_username)
+    {
+        STDL << "Permission denied.";
+        return false;
+    }
+
+    if (!info.isReadable())
+    {
+        STDL << dir << "is not readable.";
+        return false;
+    }
+
+    if (!QFileInfo(info.path()).isWritable())
+    {
+        STDL << info.path() << "is not writable.";
+        return false;
+    }
+
+    MODEL.setSourcePath(dir);
+    MODEL.setIsDirectory(true);
+    MODEL.setSourcePathFound(true);
+    loadImages();
+    return true;
+}
+
+bool ApplicationEngine::cliLoadImage(const QString &path)
+{
+    QFileInfo info(path);
+    if (!info.isFile())
+    {
+        STDL << path << "is not a file.";
+        return false;
+    }
+
+    if (info.owner() != m_username)
+    {
+        STDL << "Permission denied.";
+        return false;
+    }
+
+    if (!info.isReadable())
+    {
+        STDL << path << "is not readable.";
+        return false;
+    }
+
+    if (!QFileInfo(info.path()).isWritable())
+    {
+        STDL << info.path() << "is not writable.";
+        return false;
+    }
+
+    MODEL.setSourcePath(path);
+    MODEL.setIsDirectory(false);
+    MODEL.setSourcePathFound(true);
+    loadImages();
+    return true;
+}
+
+void ApplicationEngine::cliGenImage()
+{
+    m_processWorker.startProcessImages();
+    if (MODEL.isDirectory())
+    {
+        STDL << "Output directory:" << MODEL.resultDir();
+        QDesktopServices::openUrl(QUrl::fromLocalFile(MODEL.resultDir()));
+    }
+    else
+    {
+        QFileInfo info(MODEL.sourcePath());
+        STDL << "Output directory:" << info.absolutePath();
+        QDesktopServices::openUrl(QUrl::fromLocalFile(info.absolutePath()));
+    }
 }
 
 void ApplicationEngine::registerQmlType()
@@ -54,13 +135,12 @@ void ApplicationEngine::initQmlcontext()
 
 void ApplicationEngine::initApplicationConfig()
 {
-    INFO;
-    GUI_MODEL.applySettings();
+    DEBUG;
 }
 
 void ApplicationEngine::initConnection()
 {
-    INFO;
+    DEBUG;
     connect(&m_eventHandler, &Events::sendEvent,
             this, &ApplicationEngine::onReceivedEvent);
     connect(this, &ApplicationEngine::requestStartProcessImages,
@@ -71,7 +151,7 @@ void ApplicationEngine::initConnection()
 
 void ApplicationEngine::loadImages()
 {
-    INFO;
+    DEBUG;
     if (!MODEL.sourcePathFound())
         return;
     MODEL.reqClearQmlLog();
@@ -80,14 +160,14 @@ void ApplicationEngine::loadImages()
     if (MODEL.isDirectory())
     {
         MODEL.setIsScanning(true);
-        MODEL.printQmlLog(Events::QML_WARN, QString("Loaded directory: %1").arg(MODEL.sourcePath()));
+        MODEL.printQmlLog(Events::QML_WARN, QString("Loaded directory: <b>%1</b>").arg(MODEL.sourcePath()));
         MODEL.setListFiles(scanAllPngFromDirectory(MODEL.sourcePath()));
         MODEL.setIsScanning(false);
     }
     else
     {
         MODEL.setIsScanning(true);
-        MODEL.printQmlLog(Events::QML_WARN, QString("Loaded file: %1").arg(MODEL.sourcePath()));
+        MODEL.printQmlLog(Events::QML_WARN, QString("Loaded file: <b>%1</b>").arg(MODEL.sourcePath()));
         MODEL.setFile(MODEL.sourcePath());
         MODEL.setIsScanning(false);
     }
@@ -95,24 +175,15 @@ void ApplicationEngine::loadImages()
 
 void ApplicationEngine::genImages()
 {
-    INFO;
-    if (MODEL.backupDir().isEmpty() || MODEL.resultDir().isEmpty())
-    {
-        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Backup directory or result directory not found"));
+    DEBUG;
+    if (MODEL.isProcessing())
         return;
-    }
     emit requestStartProcessImages();
 }
 
 QStringList ApplicationEngine::scanAllPngFromDirectory(const QString &dir)
 {
     QStringList list;
-    if (!makeOutputDirectory(dir))
-    {
-        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Cannot make destination directory."));
-        MODEL.setIsRunable(false);
-        return list;
-    }
 
     // scan all images file after confirm destination directory is made
     QDirIterator iter(dir, QStringList() << "*.png" << "*.PNG", QDir::Files, QDirIterator::Subdirectories);
@@ -126,7 +197,7 @@ QStringList ApplicationEngine::scanAllPngFromDirectory(const QString &dir)
         }
     }
 
-    MODEL.printQmlLog(Events::QML_WARN, QString("Total found: %1 image(s)").arg(list.count()));
+    MODEL.printQmlLog(Events::QML_WARN, QString("Total found: <b>%1</b> image(s)").arg(list.count()));
     MODEL.setIsRunable(true);
     return list;
 }
@@ -141,7 +212,13 @@ QString ApplicationEngine::getCurrentUser()
 
 void ApplicationEngine::verifyInputPath(QString path)
 {
-    if (path.endsWith(QLatin1Char('/')))
+    if (path.isEmpty())
+    {
+        WARN << "Empty";
+        return;
+    }
+
+    if (path.length() > 1 && path.endsWith(QLatin1Char('/')))
         path.chop(1);
 
     QFileInfo info(path);
@@ -160,7 +237,7 @@ void ApplicationEngine::verifyInputPath(QString path)
             MODEL.setSourcePathFound(false);
             return;
         }
-        INFO << "Directory found:" << path;
+        DEBUG << "Directory found:" << path;
         MODEL.setSourcePath(path);
         MODEL.setIsDirectory(true);
         MODEL.setSourcePathFound(true);
@@ -181,7 +258,7 @@ void ApplicationEngine::verifyInputPath(QString path)
             MODEL.setSourcePathFound(false);
             return;
         }
-        INFO << "File found:" << path;
+        DEBUG << "File found:" << path;
         MODEL.setSourcePath(path);
         MODEL.setIsDirectory(false);
         MODEL.setBackupDir(info.path());
@@ -194,102 +271,18 @@ void ApplicationEngine::verifyInputPath(QString path)
     }
 }
 
-void ApplicationEngine::applyNewAppConfig()
+void ApplicationEngine::terminateGenerator()
 {
-    GUI_MODEL.applySettings();
-}
-
-bool ApplicationEngine::makeOutputDirectory(const QString &inputDir)
-{
-    // Create parent backup and result dir
-    QString backupDir = inputDir + QLatin1String("_backup");
-    QString resultDir = inputDir + QLatin1String("_result");
-
-    if (!makeBackupDir(backupDir))
-        return false;
-
-    if (!makeResultDir(resultDir))
-        return false;
-    MODEL.setBackupDir(backupDir);
-    MODEL.setResultDir(resultDir);
-
-    // Create child dir
-    QDirIterator iterDir(inputDir, QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
-    while (iterDir.hasNext())
+    if (MODEL.isProcessing())
     {
-        QString found = iterDir.next();
-        DEBUG << "Found dir:" << found;
-
-        QString backup = QString(found).insert(inputDir.length(), "_backup");
-        if (!QDir().mkpath(backup))
-        {
-            MODEL.printQmlLog(Events::QML_FATAL, QString("Cannot make path %1").arg(backup));
-            return false;
-        }
-        DEBUG << "Make backup directory:" << backup;
-
-        QString result = QString(found).insert(inputDir.length(), "_result");
-        if (!QDir().mkpath(result))
-        {
-            MODEL.printQmlLog(Events::QML_FATAL, QString("Cannot make path %1").arg(result));
-            return false;
-        }
-        DEBUG << "Make result directory:" << result;
+        WARN << "Request terminate ProcessWorker";
+        m_processThread.requestInterruption();
     }
-    return true;
-}
-
-bool ApplicationEngine::makeBackupDir(const QString &path)
-{
-    QFileInfo info(path);
-    if (info.isFile() && !QFile::remove(path))
-    {
-        WARN << path << "is an existed file and cannot remove";
-        return false;
-    }
-    if (info.isDir())
-    {
-        if (!info.isWritable() || !info.isReadable())
-        {
-            WARN << "Permission denied";
-            return false;
-        }
-        return true;
-    }
-    if (!info.exists())
-    {
-        INFO << "Make path" << path;
-        return QDir().mkpath(path);
-    }
-
-    WARN << "Cannot regconize" << path << ", write backup in to input directory";
-    return true;
-}
-
-bool ApplicationEngine::makeResultDir(const QString &path)
-{
-    QFileInfo info(path);
-    if (info.isDir() && !QDir(path).removeRecursively())
-    {
-        WARN << path << "is an existed dir and cannot remove";
-        return false;
-    }
-    if (info.isFile() && QFile::remove(path))
-    {
-        WARN << path << "is an existed file and cannot remove";
-        return false;
-    }
-    if (!QDir().mkpath(path))
-    {
-        WARN << path << "cannot be created";
-        return false;
-    }
-    return true;
 }
 
 void ApplicationEngine::onReceivedEvent(int eventId, QByteArray data)
 {
-    INFO << "Send event:" << static_cast<Events::EventID>(eventId)
+    DEBUG << "Send event:" << static_cast<Events::EventID>(eventId)
          << ", Data:" << data;
     switch (eventId) {
     case static_cast<int>(Events::REQ_LOAD_IMAGES):
@@ -300,9 +293,6 @@ void ApplicationEngine::onReceivedEvent(int eventId, QByteArray data)
         break;
     case static_cast<int>(Events::REQ_VERIFY_SOURCE):
         verifyInputPath(QString(data));
-        break;
-    case static_cast<int>(Events::REQ_APPLY_APP_CONFIG):
-        applyNewAppConfig();
         break;
     default:
         break;

@@ -4,11 +4,11 @@ import "Common"
 Item {
     id: root
 
-    width: 100
-    height: width
+    width: GUI.globalButtonSize
+    height: GUI.globalButtonSize
 
-    property color bgColor: "lightgray"
-    property color idxerColor: "#34de35"
+    property color bgColor: GUI.whitesmoke
+    property color idxerColor: GUI.lightgray
 
     Rectangle {
         id: bg_idxer
@@ -25,6 +25,17 @@ Item {
     }
 
     Rectangle {
+        anchors.top: bg_idxer.top
+        width: root.width ; height: 1
+        color: GUI.black
+    }
+    Rectangle {
+        anchors.bottom: bg_idxer.bottom
+        width: root.width ; height: 1
+        color: GUI.black
+    }
+
+    Rectangle {
         id: idxer
         readonly property double widthFactor: .93 // modify this offset for better looking
         readonly property double heightFactor: .85 // modify this offset for better looking
@@ -35,7 +46,6 @@ Item {
             horizontalCenter: bg_idxer.horizontalCenter
             verticalCenter: bg_idxer.verticalCenter
         }
-
         color: root.idxerColor
     }
 }

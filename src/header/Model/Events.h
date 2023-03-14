@@ -12,7 +12,6 @@ public:
         REQ_GEN_IMAGE,
         REQ_LOAD_IMAGES,
         REQ_VERIFY_SOURCE,
-        REQ_APPLY_APP_CONFIG,
     };
     Q_ENUM(EventID)
 
@@ -30,14 +29,13 @@ public:
     };
     Q_ENUM(LogLevel)
 
-    enum Resolutions {
-        RES_640X480,
-        RES_800X600,
-        RES_960X720,
-        RES_1024X768,
-        RES_1280X960,
+    enum ButtonState {
+        BROWSE = 0,
+        LOAD,
+        EXECUTE,
+        TERMINATE,
     };
-    Q_ENUM(Resolutions)
+    Q_ENUM(ButtonState)
 
     explicit Events(QObject *parent = nullptr);
 

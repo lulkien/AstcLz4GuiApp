@@ -16,7 +16,7 @@ class Settings : public QObject
 
     // app setting
     Q_PROPERTY(int  logLevel        READ logLevel       WRITE setLogLevel       NOTIFY logLevelChanged)
-    Q_PROPERTY(int  resolutionID    READ resolutionID   WRITE setResolutionID   NOTIFY resolutionIDChanged)
+    Q_PROPERTY(bool clearBackup     READ clearBackup    WRITE setClearBackup    NOTIFY clearBackupChanged)
 
 public:
     static Settings& instance();
@@ -36,8 +36,8 @@ public:
     int logLevel() const;
     void setLogLevel(int newLogLevel);
 
-    int resolutionID() const;
-    void setResolutionID(int newResolutionID);
+    bool clearBackup() const;
+    void setClearBackup(bool newClearBackup);
 
 private:
     Settings();
@@ -45,12 +45,12 @@ private:
 public slots:
 
 signals:
-    void logLevelChanged();
     void noFlipChanged();
     void noPremultChanged();
     void useBackupChanged();
     void veryfastChanged();
-    void resolutionIDChanged();
+    void logLevelChanged();
+    void clearBackupChanged();
 
 private:
     bool m_noFlip;
@@ -58,7 +58,7 @@ private:
     bool m_useBackup;
     bool m_veryfast;
     int m_logLevel;
-    int m_resolutionID;
+    bool m_clearBackup;
 };
 
 #endif // APPLICATIONSETTINGS_H

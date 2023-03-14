@@ -13,9 +13,9 @@ ImageCompressor::ImageCompressor(const QString &pngFileName)
     : m_pngFileName     { pngFileName }
     , m_isTerminated    { false }
 {
-    INFO << "Construct an ImageProcessor:" << pngFileName;
+    DEBUG << "Construct an ImageProcessor:" << pngFileName;
     initPath();
-    MODEL.printQmlLogSeparator();
+//    MODEL.printQmlLogSeparator();
     MODEL.printQmlLog(Events::QML_WARN, QString("Start process: <b>%1<\b>").arg(m_pngFileName));
 }
 
@@ -52,7 +52,7 @@ bool ImageCompressor::compress()
     if (!runLz4Compress())
         return false;
 
-    MODEL.printQmlLog(Events::QML_WARN, QLatin1String("Completed."));
+    MODEL.printQmlLog(Events::QML_WARN, QLatin1String("<b>Completed.</b>"));
     garbageCollect();
     return true;
 }
@@ -188,6 +188,9 @@ process_flow_ctrl ImageCompressor::convert_normalized_png_to_premult_bmp()
                                      << QString("-composite")
                                      << m_premultBmpPath;
     DEBUG << "Running" << IMAGE_MAGICK << "with" << args;
+    if (!checkProcessExecutable(IMAGE_MAGICK))
+        return p_failure;
+
     m_process.start(IMAGE_MAGICK, args);
     if (!waitProcess())
         return p_terminated;
@@ -264,6 +267,9 @@ process_flow_ctrl ImageCompressor::runAstcEncoder()
                                                << speed
                                                << QString("-silentmode");
 
+        if (!checkProcessExecutable(ASTCENCODER))
+            return p_failure;
+
         DEBUG << "Running" << ASTCENCODER << "with arguments" << args;
         m_process.start(ASTCENCODER, args);
 
@@ -337,11 +343,11 @@ function_flow_ctrl ImageCompressor::retrieveAstcFromBackup()
     QFile backupAstcFile(m_astcBackupPath);
     if (backupAstcFile.copy(m_astcPath))
     {
-        INFO << "Retrieve ASTC from backup ASTC file successfully";
+        DEBUG << "Retrieve ASTC from backup ASTC file successfully";
         return f_success;
     }
 
-    INFO << "Cannot retrieve ASTC file from backup ASTC file. Remove the backup file and continue...";
+    DEBUG << "Cannot retrieve ASTC file from backup ASTC file. Remove the backup file and continue...";
     if (!backupAstcFile.remove())
     {
         WARN << "Cannot remove backup ASTC file. Stop process!!!";
@@ -358,7 +364,7 @@ void ImageCompressor::backupAstcFile()
     Utilities::removeFile(m_astcBackupPath);
     if (!astcFile.copy(m_astcBackupPath))
     {
-        MODEL.printQmlLog(Events::QML_WARN, QLatin1String("Cannot backup ASTC file"));
+        MODEL.printQmlLog(Events::QML_WARN, QLatin1String("<b>Cannot backup ASTC file</b>"));
         WARN << "Cannot backup ASTC file:" << m_astcPath;
     }
     else
@@ -457,9 +463,17 @@ bool ImageCompressor::waitProcess()
     return true;
 }
 
+bool ImageCompressor::checkProcessExecutable(const QString &processName)
+{
+    QFileInfo info(processName);
+    if (!info.isExecutable())
+        return false;
+    return true;
+}
+
 bool ImageCompressor::garbageCollect()
 {
-    INFO << "Remove headless ASTC file";
+    DEBUG << "Remove headless ASTC file";
     return Utilities::removeFile(m_astcPath);
 }
 

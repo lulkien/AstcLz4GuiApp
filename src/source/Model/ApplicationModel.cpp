@@ -33,6 +33,7 @@ void ApplicationModel::printQmlLog(Events::LogLevel level, QString logData)
 {
     if (static_cast<int>(level) >= SETTINGS.logLevel())
     {
+        STDL << QString(logData).remove(QRegExp("<[^>]*>"));
         QTime now = QTime::currentTime();
         QString formatedTime = now.toString("[ %1 ][ hh:mm:ss.zzz ]<br>")
                 .arg(LOG_LEVEL.at(static_cast<int>(level)));
@@ -116,10 +117,9 @@ void ApplicationModel::setIsProcessing(bool isProcessing)
 
 void ApplicationModel::setTotalFound(int totalFound)
 {
-    if (m_totalFound == totalFound)
-        return;
+    if (m_totalFound != totalFound)
+        m_totalFound = totalFound;
 
-    m_totalFound = totalFound;
     emit totalFoundChanged(m_totalFound);
 }
 
@@ -159,6 +159,15 @@ void ApplicationModel::setCurrentTab(int currentTab)
     emit currentTabChanged(m_currentTab);
 }
 
+void ApplicationModel::setCurrentBtnState(int currentBtnState)
+{
+    if (m_currentBtnState == currentBtnState)
+        return;
+
+    m_currentBtnState = currentBtnState;
+    emit currentBtnStateChanged(m_currentBtnState);
+}
+
 ApplicationModel::ApplicationModel()
     : m_isDirectory     { true }
     , m_sourcePath      { "" }
@@ -172,6 +181,7 @@ ApplicationModel::ApplicationModel()
     , m_currentTab      { static_cast<int>(Events::MAIN_SCREEN) }
     , m_backupDir       { "" }
     , m_resultDir       { "" }
+    , m_currentBtnState { static_cast<int>(Events::BROWSE) }
 {
     m_listFiles.clear();
 }

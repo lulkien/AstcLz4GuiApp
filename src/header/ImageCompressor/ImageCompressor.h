@@ -34,6 +34,7 @@ private:
 
     // process
     bool waitProcess();
+    bool checkProcessExecutable(const QString &processName);
 
     // post-process
     bool garbageCollect();
