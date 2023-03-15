@@ -2,8 +2,8 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QmlCustomType 1.0
 import Qt.labs.platform 1.1
-import "../Components"
-import "../Components/Common"
+import "../Components" as Comp
+import "../Components/Common" as Comm
 
 Item {
     id: root
@@ -17,7 +17,7 @@ Item {
         width: parent.width - 2 * GUI.globalMargins
         height: GUI.globalBarHeight
 
-        ALG_TextField {
+        Comm.ALG_TextField {
             id: textBox
             width: parent.width - GUI.globalBarHeight
             height: parent.height
@@ -37,7 +37,7 @@ Item {
             }
         }
 
-        ALG_Button {
+        Comp.ALG_Button {
             anchors.left: textBox.right
             width: GUI.globalBarHeight
             height: GUI.globalBarHeight
@@ -73,7 +73,7 @@ Item {
         }
         width: GUI.globalButtonSize
         height: GUI.globalButtonSize
-        ALG_Button {
+        Comp.ALG_Button {
             id: btn
             width: GUI.globalButtonSize
             height: GUI.globalButtonSize
@@ -125,7 +125,7 @@ Item {
                 ListElement { _title: "Open folder." ; _isDirectory: true  }
             }
 
-            ALG_SplitButton {
+            Comp.ALG_SplitButton {
                 id: menuView
                 anchors.centerIn: btn
                 width: GUI.globalButtonSize - 2 // border offset
@@ -137,7 +137,7 @@ Item {
 
             Component {
                 id: menuItem
-                ALG_Button {
+                Comp.ALG_Button {
                     width: menuView.width
                     height: menuView.height / 2
                     label {
@@ -193,7 +193,7 @@ Item {
             top: buttons_area.top
         }
 
-        ALG_ProgressBar {
+        Comp.ALG_ProgressBar {
             id: progressBar
             width: parent.width
             height: GUI.globalBarHeight
@@ -202,7 +202,7 @@ Item {
             failureCount: AppModel.failureCount
         }
 
-        ALG_Text {
+        Comm.ALG_Text {
             id: statistic_text
             anchors.top: progressBar.bottom
             width: parent.width
@@ -214,7 +214,7 @@ Item {
                   + "Failure count: " + AppModel.failureCount + " (" + progressBar.failureRate + "%)"
         }
 
-        ALG_Loading {
+        Comp.ALG_Loading {
             id: loading
             visible: (AppModel.isScanning || AppModel.isProcessing)
             icoSize: 40
@@ -259,7 +259,7 @@ Item {
                 width: log_view.width
                 height: textArea.height
 
-                ALG_Text {
+                Comm.ALG_Text {
                     id: textArea
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: parent.width - GUI.globalMargins / 2

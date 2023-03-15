@@ -2,15 +2,16 @@ import QtQuick 2.0
 
 ListView {
     id: root
-    property int timeOutInterval: 1500
+    property int timeOutInterval: 2000
 
     width: GUI.globalButtonSize
     height: GUI.globalButtonSize
     interactive: false
     onVisibleChanged: {
-        if (visible) {
+        if (visible)
             timeOut.restart()
-        }
+        else
+            timeOut.stop()
     }
 
     Timer {

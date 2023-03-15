@@ -1,8 +1,8 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QmlCustomType 1.0
-import "../Components"
-import "../Components/Common"
+import "../Components" as Comp
+import "../Components/Common" as Comm
 
 Item {
     id: root
@@ -13,7 +13,7 @@ Item {
         readonly property int drawHeight: root.height - 2 * GUI.globalMargins
     }
 
-    ALG_Frame {
+    Comp.ALG_Frame {
         id: astcSettingsArea
         anchors {
             top: parent.top
@@ -22,8 +22,8 @@ Item {
             leftMargin: GUI.globalMargins
         }
 
-        width: (privateProperties.drawWidth - GUI.globalMargins) / 2
-        height: (privateProperties.drawHeight - GUI.globalMargins) * 2 / 3
+        width: (root.width - 3 * GUI.globalMargins) / 2
+        height: (root.height - 3 * GUI.globalMargins) * 2 / 3
         frameText.text: "Compression settings"
 
         Item {
@@ -32,7 +32,7 @@ Item {
             anchors.fill: parent
             Column {
                 spacing: 5
-                ALG_CheckBox {
+                Comm.ALG_CheckBox {
                     width: compressSettingLayout.width
                     checkState: AppSettings.noFlip ? Qt.Checked : Qt.Unchecked
                     text: "No flip image."
@@ -40,7 +40,7 @@ Item {
                         AppSettings.noFlip = !AppSettings.noFlip
                     }
                 }
-                ALG_CheckBox {
+                Comm.ALG_CheckBox {
                     width: compressSettingLayout.width
                     checkState: AppSettings.noPremult ? Qt.Checked : Qt.Unchecked
                     text: "No premultiply image."
@@ -48,7 +48,7 @@ Item {
                         AppSettings.noPremult = !AppSettings.noPremult
                     }
                 }
-                ALG_CheckBox {
+                Comm.ALG_CheckBox {
                     width: compressSettingLayout.width
                     checkState: AppSettings.useBackup ? Qt.Checked : Qt.Unchecked
                     text: "Use backup/pregenerated ASTC."
@@ -56,7 +56,7 @@ Item {
                         AppSettings.useBackup = !AppSettings.useBackup
                     }
                 }
-                ALG_CheckBox {
+                Comm.ALG_CheckBox {
                     width: compressSettingLayout.width
                     checkState: AppSettings.veryfast ? Qt.Checked : Qt.Unchecked
                     text: "Use veryfast compression."
@@ -68,7 +68,7 @@ Item {
         }
     }
 
-    ALG_Frame {
+    Comp.ALG_Frame {
         id: appSettingsArea
         anchors {
             top: parent.top
@@ -77,8 +77,8 @@ Item {
             rightMargin: GUI.globalMargins
         }
 
-        width: (privateProperties.drawWidth - GUI.globalMargins) / 2
-        height: (privateProperties.drawHeight - GUI.globalMargins) * 2 / 3
+        width: astcSettingsArea.width
+        height: astcSettingsArea.height
         frameText.text: "Application settings"
 
         Item {
@@ -87,7 +87,7 @@ Item {
             anchors.margins: GUI.globalMargins
             Column {
                 spacing: 5
-                ALG_Slider {
+                Comp.ALG_Slider {
                     width: appSettingsLayout.width
                     label {
                         text: "Log level: <b>" + getAliasedString(AppSettings.logLevel) + "<\b>"
@@ -107,7 +107,7 @@ Item {
         }
     }
 
-    ALG_Frame {
+    Comp.ALG_Frame {
         id: extensionsArea
         anchors {
             bottom: parent.bottom
@@ -115,8 +115,8 @@ Item {
             horizontalCenter: parent.horizontalCenter
         }
 
-        width: privateProperties.drawWidth
-        height: (privateProperties.drawHeight - GUI.globalMargins) * 1 / 3
+        width: root.width - 2 * GUI.globalMargins
+        height: (root.height - 3 * GUI.globalMargins) / 3
         frameText.text: "About"
     }
 }
