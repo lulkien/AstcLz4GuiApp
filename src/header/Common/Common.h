@@ -17,6 +17,9 @@
 #define IMAGE_MAGICK        QLatin1String("/usr/local/astc_lz4_tools/convert")
 #define ASTCENCODER         QLatin1String("/usr/local/astc_lz4_tools/astcenc")
 
+#define TEMP_DIR_SUFFIX     QLatin1String("_temp")
+#define OUTPUT_DIR_SUFFIX   QLatin1String("_output")
+
 #define ENCODED_HEADER      "\tLZ_ENJOYTOOLS\t"
 #define ENCODED_HEADER_LEN  15
 

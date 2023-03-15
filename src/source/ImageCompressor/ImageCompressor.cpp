@@ -60,10 +60,10 @@ bool ImageCompressor::compress()
 void ImageCompressor::initPath()
 {
     //                                         <original file>      <old suffix>                <new suffix>                    <old prefix>            <new prefix>
-    m_normalizedPath    = Utilities::modifyPath(m_pngFileName, QLatin1String(".png"),   QLatin1String(".normalized.png"),   MODEL.workingDir(),     MODEL.backupDir());
-    m_premultBmpPath    = Utilities::modifyPath(m_pngFileName, QLatin1String(".png"),   QLatin1String(".normalized.bmp"),   MODEL.workingDir(),     MODEL.backupDir());
-    m_astcPath          = Utilities::modifyPath(m_pngFileName, QLatin1String(""),       QLatin1String(".astc"),             MODEL.workingDir(),     MODEL.backupDir());
-    m_astcBackupPath    = Utilities::modifyPath(m_pngFileName, QLatin1String(""),       QLatin1String(".astc_"),            MODEL.workingDir(),     MODEL.backupDir());
+    m_normalizedPath    = Utilities::modifyPath(m_pngFileName, QLatin1String(".png"),   QLatin1String("_normalized.png"),   MODEL.workingDir(),     MODEL.backupDir());
+    m_premultBmpPath    = Utilities::modifyPath(m_pngFileName, QLatin1String(".png"),   QLatin1String("_normalized.bmp"),   MODEL.workingDir(),     MODEL.backupDir());
+    m_astcPath          = Utilities::modifyPath(m_pngFileName, QLatin1String(".png"),   QLatin1String(".astc"),             MODEL.workingDir(),     MODEL.backupDir());
+    m_astcBackupPath    = Utilities::modifyPath(m_pngFileName, QLatin1String(".png"),   QLatin1String("_saved.astc"),       MODEL.workingDir(),     MODEL.backupDir());
     m_astcHeaderPath    = Utilities::modifyPath(m_pngFileName, QLatin1String(""),       QLatin1String(".astc.header"),      MODEL.workingDir(),     MODEL.resultDir());
     m_astcLz4Path       = Utilities::modifyPath(m_pngFileName, QLatin1String(""),       QLatin1String(".astc.lz4"),         MODEL.workingDir(),     MODEL.resultDir());
 //    INFO << m_normalizedPath;
@@ -176,16 +176,17 @@ process_flow_ctrl ImageCompressor::convert_normalized_png_to_premult_bmp()
     MODEL.printQmlLog(Events::QML_INFO, QLatin1String("Premultiplying..."));
     Utilities::removeFile(m_premultBmpPath);
     QStringList args = QStringList() << m_normalizedPath
-                                     << QString("(")
-                                     << QString("+clone")
-                                     << QString("-alpha")
-                                     << QString("Extract")
-                                     << QString(")")
-                                     << QString("-channel")
-                                     << QString("RGB")
-                                     << QString("-compose")
-                                     << QString("multiply")
-                                     << QString("-composite")
+                                     << QLatin1String("(")
+                                     << QLatin1String("-clone")
+                                     << QLatin1String("-1")
+                                     << QLatin1String("-alpha")
+                                     << QLatin1String("Extract")
+                                     << QLatin1String(")")
+                                     << QLatin1String("-channel")
+                                     << QLatin1String("RGB")
+                                     << QLatin1String("-compose")
+                                     << QLatin1String("multiply")
+                                     << QLatin1String("-composite")
                                      << m_premultBmpPath;
     DEBUG << "Running" << IMAGE_MAGICK << "with" << args;
     if (!checkProcessExecutable(IMAGE_MAGICK))
@@ -215,11 +216,12 @@ bool ImageCompressor::convert_premult_bmp_to_normalized_png()
         MODEL.printQmlLog(Events::QML_FATAL, QString("Error saving %1").arg(FILE_NAME(m_normalizedPath)));
         return false;
     }
-    if (!QFile::remove(m_premultBmpPath))
-    {
-        MODEL.printQmlLog(Events::QML_FATAL, QString("Can't remove %1").arg(FILE_NAME(m_premultBmpPath)));
-        return false;
-    }
+//    Utilities::removeFile(m_premultBmpPath);
+//    if (!QFile::remove(m_premultBmpPath))
+//    {
+//        MODEL.printQmlLog(Events::QML_FATAL, QString("Can't remove %1").arg(FILE_NAME(m_premultBmpPath)));
+//        return false;
+//    }
     return true;
 }
 

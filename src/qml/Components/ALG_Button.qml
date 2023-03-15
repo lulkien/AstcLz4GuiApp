@@ -72,7 +72,6 @@ Rectangle {
     ToolTip {
         id: toolTip
         visible: root.isEnter
-        delay: 500
-        timeout: 1500
+        delay: 200
     }
 }

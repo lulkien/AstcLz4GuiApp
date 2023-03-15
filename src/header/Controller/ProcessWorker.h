@@ -17,11 +17,9 @@ private:
     bool createOutputDirectory();
     bool makeTempDir(const QString &tmpDir);
     bool makeResultDir(const QString &resultDir);
-
     void removeTempFiles();
 
 signals:
-
 
 };
 

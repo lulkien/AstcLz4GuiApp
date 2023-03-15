@@ -1,14 +1,12 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QmlCustomType 1.0
-import QtQml 2.12
 import Qt.labs.platform 1.1
 import "../Components"
 import "../Components/Common"
 
 Item {
     id: root
-
     Item {
         id: input_area
         anchors {
@@ -25,7 +23,7 @@ Item {
             height: parent.height
             enabled: !(AppModel.isScanning || AppModel.isProcessing)
             verticalAlignment: TextInput.AlignVCenter
-            color: AppModel.sourcePathFound ? "#000000" : "#ff6347"
+            color: AppModel.sourcePathFound ? GUI.black : GUI.tomato
             placeholderText: qsTr("<i>Paste a valid path here or click Open button...<i>")
             placeholderTextColor: "#7F8C8D"
             rightInset: -GUI.globalBarHeight
@@ -76,6 +74,7 @@ Item {
         width: GUI.globalButtonSize
         height: GUI.globalButtonSize
         ALG_Button {
+            id: btn
             width: GUI.globalButtonSize
             height: GUI.globalButtonSize
             isEnabled: getEnableState(AppModel.currentBtnState)
@@ -99,9 +98,9 @@ Item {
             function getIcoSource(btnState) {
                 switch (btnState) {
                 case QmlEvents.BROWSE:
-                    return ["qrc:/images/resources/png/search.png", qsTr("Browse images")]
+                    return ["qrc:/images/resources/png/search.png", qsTr("Open")]
                 case QmlEvents.LOAD:
-                    return ["qrc:/images/resources/png/reload.png", qsTr("Load images")]
+                    return ["qrc:/images/resources/png/reload.png", qsTr("Load")]
                 case QmlEvents.EXECUTE:
                     return ["qrc:/images/resources/png/start_filled.png", qsTr("Execute")]
                 default:
@@ -142,7 +141,7 @@ Item {
                 id: fileDialog
                 title: qsTr("Select image")
                 nameFilters: [ ".PNG File (*.png)", "All File (*)"]
-                fileMode: FileDialog.OpenFile
+                fileMode: FileDialog.OpenFile | FolderDialog.ReadOnly
                 folder: StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]
                 options: FolderDialog.ReadOnly
                 onAccepted: {
@@ -253,16 +252,16 @@ Item {
 
         Connections {
             target: AppModel
-            //            function onReqPrintQmlLog(logData) {
-            onReqPrintQmlLog: {
+            function onReqPrintQmlLog(logData) {
+//            onReqPrintQmlLog: {
                 if (log_model.count >= 100)
                     log_model.remove(0)
                 log_model.append({ _data: logData })
                 log_view.positionViewAtEnd()
             }
 
-            //            function onReqClearQmlLog() {
-            onReqClearQmlLog: {
+            function onReqClearQmlLog() {
+//            onReqClearQmlLog: {
                 log_model.clear()
                 log_view.positionViewAtBeginning()
             }
@@ -271,7 +270,8 @@ Item {
 
     Connections {
         target: AppModel
-        onTotalFoundChanged: {
+        function onTotalFoundChanged() {
+//        onTotalFoundChanged: {
             if (AppModel.totalFound !== 0) {
                 AppModel.currentBtnState = QmlEvents.EXECUTE
             }

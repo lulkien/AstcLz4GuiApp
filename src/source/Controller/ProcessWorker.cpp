@@ -7,8 +7,7 @@
 #include <QDirIterator>
 
 ProcessWorker::ProcessWorker()
-{
-}
+{}
 
 void ProcessWorker::startProcessImages()
 {
@@ -45,6 +44,7 @@ void ProcessWorker::startProcessImages()
         }
 
         removeTempFiles();
+        MODEL.printQmlLog(Events::QML_WARN, QString("Output files directory: <b>%1</b>").arg(MODEL.resultDir()));
     }
     MODEL.setIsProcessing(false);
 }
@@ -58,8 +58,8 @@ bool ProcessWorker::createOutputDirectory()
 {
     QString inputDir = MODEL.sourcePath();
     // Create parent backup and result dir
-    QString backupDir = inputDir + QLatin1String("_temp");
-    QString resultDir = inputDir + QLatin1String("_result");
+    QString backupDir = inputDir + TEMP_DIR_SUFFIX;
+    QString resultDir = inputDir + OUTPUT_DIR_SUFFIX;
 
     if (!makeTempDir(backupDir))
         MODEL.setBackupDir(inputDir);
@@ -151,8 +151,7 @@ void ProcessWorker::removeTempFiles()
             && MODEL.backupDir() != MODEL.sourcePath()      // backup dir is not same with source path
             && !SETTINGS.useBackup())                       // use backup option is diable
     {
-        DEBUG << "Remove backup dir" << MODEL.backupDir();
-        MODEL.printQmlLog(Events::QML_WARN, QString("Remove temp directory: <b>%1</b>").arg(MODEL.backupDir()));
+        MODEL.printQmlLog(Events::QML_WARN, QString("Remove temporary files directory: <b>%1</b>").arg(MODEL.backupDir()));
         QDir(MODEL.backupDir()).removeRecursively();
     }
 }
