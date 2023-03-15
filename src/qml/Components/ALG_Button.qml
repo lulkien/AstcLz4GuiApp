@@ -10,6 +10,7 @@ Rectangle {
     property alias overlay: rec_overlay
     property alias tip: toolTip
 
+    property bool enableTooltip: true
     property bool isEnabled: true
     property bool allowOverlay: true
     property bool isEnter: false
@@ -41,6 +42,7 @@ Rectangle {
 
     Image {
         id: ico
+        visible: source !== ""
         anchors.centerIn: parent
         sourceSize.width: parent.width * root.icoRatio
         sourceSize.height: parent.height * root.icoRatio
@@ -71,7 +73,7 @@ Rectangle {
 
     ToolTip {
         id: toolTip
-        visible: root.isEnter
+        visible: root.enableTooltip && root.isEnter
         delay: 200
     }
 }

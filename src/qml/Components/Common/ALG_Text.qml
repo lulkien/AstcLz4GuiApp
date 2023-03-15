@@ -5,4 +5,5 @@ Text {
         pixelSize: 14
         family: GUI.globalFont
     }
+    renderType: Text.NativeRendering
 }

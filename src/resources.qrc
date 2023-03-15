@@ -16,6 +16,7 @@
         <file>qml/Components/Common/ALG_TextField.qml</file>
         <file>qml/Components/ALG_Slider.qml</file>
         <file>qml/Components/Common/ALG_Overlay.qml</file>
+        <file>qml/Components/ALG_SplitButton.qml</file>
     </qresource>
     <qresource prefix="/images">
         <file>resources/png/home.png</file>

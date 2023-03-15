@@ -12,7 +12,7 @@ GUIModel::GUIModel()
     , m_globalMargin        { 20 }
     , m_globalButtonSize    { 100 }
     , m_globalBarHeight     { 35 }
-    , m_globalFont          { QLatin1String("Ubuntu") }
+    , m_globalFont          { QLatin1String("Hack") }
     , m_invisible           { QLatin1String("Transparent") }
     , m_gray                { QLatin1String("gray") }
     , m_lightgray           { QLatin1String("lightgray") }

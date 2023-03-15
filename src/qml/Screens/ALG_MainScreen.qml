@@ -85,7 +85,8 @@ Item {
             onClicked: {
                 var _state = AppModel.currentBtnState
                 if (_state === QmlEvents.BROWSE) {
-                    menu.open()
+//                    menu.open()
+                    menuView.visible = true
                 } else if (_state === QmlEvents.LOAD) {
                     EventHandler.qmlSendEvent(QmlEvents.REQ_LOAD_IMAGES)
                 } else if (_state === QmlEvents.EXECUTE) {
@@ -118,21 +119,42 @@ Item {
                 return true
             }
 
-            Menu {
-                id: menu
-                MenuItem {
-                    text: qsTr("Open file...")
-                    onTriggered: {
-                        AppModel.isDirectory = false
-                        fileDialog.open()
+            ListModel {
+                id: menuModel
+                ListElement { _title: "Select file." ; _isDirectory: false }
+                ListElement { _title: "Open folder." ; _isDirectory: true  }
+            }
+
+            ALG_SplitButton {
+                id: menuView
+                anchors.centerIn: btn
+                width: GUI.globalButtonSize - 2 // border offset
+                height: width
+                model: menuModel
+                visible: false
+                delegate: menuItem
+            }
+
+            Component {
+                id: menuItem
+                ALG_Button {
+                    width: menuView.width
+                    height: menuView.height / 2
+                    label {
+                        text: _title
+                        font.pixelSize: 14
+                        font.bold: false
+                        color: GUI.black
                     }
-                }
-                MenuSeparator {}
-                MenuItem {
-                    text: qsTr("Open folder...")
-                    onTriggered: {
-                        AppModel.isDirectory = true
-                        folderDialog.open()
+                    enableTooltip: false
+                    border.width: 1
+                    onClicked: {
+                        AppModel.isDirectory = _isDirectory
+                        menuView.visible = false
+                        if (_isDirectory)
+                            folderDialog.open()
+                        else
+                            fileDialog.open()
                     }
                 }
             }
