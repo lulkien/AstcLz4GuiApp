@@ -1,22 +1,22 @@
 <RCC>
     <qresource prefix="/">
-        <file>qml/Components/ALG_ProgressBar.qml</file>
-        <file>qml/Screens/ALG_MainScreen.qml</file>
-        <file>qml/main.qml</file>
         <file>qml/Components/ALG_Button.qml</file>
+        <file>qml/Components/ALG_Frame.qml</file>
+        <file>qml/Components/ALG_Loading.qml</file>
+        <file>qml/Components/ALG_ProgressBar.qml</file>
+        <file>qml/Components/ALG_Slider.qml</file>
+        <file>qml/Components/ALG_SplitButton.qml</file>
         <file>qml/Components/ALG_TabBar.qml</file>
-        <file>qml/Components/ALG_TabItem.qml</file>
         <file>qml/Components/ALG_TabIndexer.qml</file>
+        <file>qml/Components/ALG_TabItem.qml</file>
+        <file>qml/Components/Common/ALG_CheckBox.qml</file>
+        <file>qml/Components/Common/ALG_Overlay.qml</file>
+        <file>qml/Components/Common/ALG_Text.qml</file>
+        <file>qml/Components/Common/ALG_TextField.qml</file>
+        <file>qml/Screens/ALG_MainScreen.qml</file>
         <file>qml/Screens/ALG_ScreenLoader.qml</file>
         <file>qml/Screens/ALG_SetupScreen.qml</file>
-        <file>qml/Components/ALG_Loading.qml</file>
-        <file>qml/Components/ALG_Frame.qml</file>
-        <file>qml/Components/Common/ALG_Text.qml</file>
-        <file>qml/Components/Common/ALG_CheckBox.qml</file>
-        <file>qml/Components/Common/ALG_TextField.qml</file>
-        <file>qml/Components/ALG_Slider.qml</file>
-        <file>qml/Components/Common/ALG_Overlay.qml</file>
-        <file>qml/Components/ALG_SplitButton.qml</file>
+        <file>qml/main.qml</file>
     </qresource>
     <qresource prefix="/images">
         <file>resources/png/home.png</file>
