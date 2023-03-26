@@ -85,8 +85,7 @@ Item {
             onClicked: {
                 var _state = AppModel.currentBtnState
                 if (_state === QmlEvents.BROWSE) {
-//                    menu.open()
-                    menuView.visible = true
+                    menuView.show()
                 } else if (_state === QmlEvents.LOAD) {
                     EventHandler.qmlSendEvent(QmlEvents.REQ_LOAD_IMAGES)
                 } else if (_state === QmlEvents.EXECUTE) {
@@ -150,7 +149,7 @@ Item {
                     border.width: 1
                     onClicked: {
                         AppModel.isDirectory = _isDirectory
-                        menuView.visible = false
+                        menuView.hide()
                         if (_isDirectory)
                             folderDialog.open()
                         else
@@ -271,27 +270,24 @@ Item {
                 }
             }
         }
-
-        Connections {
-            target: AppModel
-            function onReqPrintQmlLog(logData) {
-//            onReqPrintQmlLog: {
-                if (log_model.count >= 100)
-                    log_model.remove(0)
-                log_model.append({ _data: logData })
-                log_view.positionViewAtEnd()
-            }
-
-            function onReqClearQmlLog() {
-//            onReqClearQmlLog: {
-                log_model.clear()
-                log_view.positionViewAtBeginning()
-            }
-        }
     }
 
     Connections {
         target: AppModel
+        function onReqPrintQmlLog(logData) {
+//        onReqPrintQmlLog: {
+            if (log_model.count >= 100)
+                log_model.remove(0)
+            log_model.append({ _data: logData })
+            log_view.positionViewAtEnd()
+        }
+
+        function onReqClearQmlLog() {
+//        onReqClearQmlLog: {
+            log_model.clear()
+            log_view.positionViewAtBeginning()
+        }
+
         function onTotalFoundChanged() {
 //        onTotalFoundChanged: {
             if (AppModel.totalFound !== 0) {

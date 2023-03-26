@@ -198,7 +198,6 @@ QStringList ApplicationEngine::scanAllPngFromDirectory(const QString &dir)
     }
 
     MODEL.printQmlLog(Events::QML_WARN, QString("Total found: <b>%1</b> image(s)").arg(list.count()));
-    MODEL.setIsRunable(true);
     return list;
 }
 

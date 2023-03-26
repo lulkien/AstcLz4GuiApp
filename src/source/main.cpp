@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
 
     if (parser.isSet("g"))
     {
+        SETTINGS.setUseBackup(true);
         engine.startApplication();
         return app.exec();
     }

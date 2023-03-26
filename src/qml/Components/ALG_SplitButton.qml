@@ -7,12 +7,6 @@ ListView {
     width: GUI.globalButtonSize
     height: GUI.globalButtonSize
     interactive: false
-    onVisibleChanged: {
-        if (visible)
-            timeOut.restart()
-        else
-            timeOut.stop()
-    }
 
     Timer {
         id: timeOut
@@ -20,5 +14,15 @@ ListView {
         running: false
         repeat: false
         onTriggered: root.visible = false
+    }
+
+    function show() {
+        root.visible = true
+        timeOut.restart()
+    }
+
+    function hide() {
+        root.visible = false
+        timeOut.stop()
     }
 }

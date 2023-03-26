@@ -33,10 +33,29 @@ void ApplicationModel::printQmlLog(Events::LogLevel level, QString logData)
 {
     if (static_cast<int>(level) >= SETTINGS.logLevel())
     {
-        STDL << QString(logData).remove(QRegExp("<[^>]*>"));
         QTime now = QTime::currentTime();
         QString formatedTime = now.toString("[ %1 ][ hh:mm:ss.zzz ]<br>")
                 .arg(LOG_LEVEL.at(static_cast<int>(level)));
+        STDL << QString(logData).remove(QRegExp("<[^>]*>"));
+        logData = formatedTime + logData;
+        emit reqPrintQmlLog(logData);
+    }
+}
+
+void ApplicationModel::printQmlLog(Events::LogLevel level, QStringList listData)
+{
+    if (static_cast<int>(level) >= SETTINGS.logLevel())
+    {
+        QTime now = QTime::currentTime();
+        QString formatedTime = now.toString("[ %1 ][ hh:mm:ss.zzz ]<br>")
+                .arg(LOG_LEVEL.at(static_cast<int>(level)));
+        QString logData;
+        for (QString item : listData)
+        {
+            logData.append(item);
+            logData.append(QLatin1String(", "));
+        }
+        STDL << QString(logData).remove(QRegExp("<[^>]*>"));
         logData = formatedTime + logData;
         emit reqPrintQmlLog(logData);
     }
@@ -141,15 +160,6 @@ void ApplicationModel::setFailureCount(int failureCount)
     emit failureCountChanged(m_failureCount);
 }
 
-void ApplicationModel::setIsRunable(bool isRunable)
-{
-    if (m_isRunable == isRunable)
-        return;
-
-    m_isRunable = isRunable;
-    emit isRunableChanged(m_isRunable);
-}
-
 void ApplicationModel::setCurrentTab(int currentTab)
 {
     if (m_currentTab == currentTab)
@@ -177,7 +187,6 @@ ApplicationModel::ApplicationModel()
     , m_totalFound      { 0 }
     , m_successCount    { 0 }
     , m_failureCount    { 0 }
-    , m_isRunable       { true }
     , m_currentTab      { static_cast<int>(Events::MAIN_SCREEN) }
     , m_backupDir       { "" }
     , m_resultDir       { "" }

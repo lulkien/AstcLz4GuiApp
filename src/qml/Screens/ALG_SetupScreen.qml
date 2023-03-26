@@ -23,7 +23,7 @@ Item {
         }
 
         width: (root.width - 3 * GUI.globalMargins) / 2
-        height: (root.height - 3 * GUI.globalMargins) * 2 / 3
+        height: (root.height - 3 * GUI.globalMargins) / 2
         frameText.text: "Compression settings"
 
         Item {
@@ -34,35 +34,45 @@ Item {
                 spacing: 5
                 Comm.ALG_CheckBox {
                     width: compressSettingLayout.width
-                    checkState: AppSettings.noFlip ? Qt.Checked : Qt.Unchecked
-                    text: "No flip image."
-                    onClicked: {
-                        AppSettings.noFlip = !AppSettings.noFlip
-                    }
+                    box.checkState: AppSettings.noFlip ? Qt.Checked : Qt.Unchecked
+                    box.onClicked: AppSettings.noFlip = !AppSettings.noFlip
+                    label.text: "No flip image."
                 }
                 Comm.ALG_CheckBox {
                     width: compressSettingLayout.width
-                    checkState: AppSettings.noPremult ? Qt.Checked : Qt.Unchecked
-                    text: "No premultiply image."
-                    onClicked: {
-                        AppSettings.noPremult = !AppSettings.noPremult
-                    }
+                    box.checkState: AppSettings.noPremult ? Qt.Checked : Qt.Unchecked
+                    box.onClicked: AppSettings.noPremult = !AppSettings.noPremult
+                    label.text: "No premultiply image."
                 }
                 Comm.ALG_CheckBox {
                     width: compressSettingLayout.width
-                    checkState: AppSettings.useBackup ? Qt.Checked : Qt.Unchecked
-                    text: "Use backup/pregenerated ASTC."
-                    onClicked: {
-                        AppSettings.useBackup = !AppSettings.useBackup
-                    }
+                    box.checkState: AppSettings.useBackup ? Qt.Checked : Qt.Unchecked
+                    box.onClicked: AppSettings.useBackup = !AppSettings.useBackup
+                    label.text: "Use backup/pregenerated ASTC."
                 }
                 Comm.ALG_CheckBox {
                     width: compressSettingLayout.width
-                    checkState: AppSettings.veryfast ? Qt.Checked : Qt.Unchecked
-                    text: "Use veryfast compression."
-                    onClicked: {
-                        AppSettings.veryfast = !AppSettings.veryfast
+                    box.checkState: AppSettings.veryfast ? Qt.Checked : Qt.Unchecked
+                    box.onClicked: AppSettings.veryfast = !AppSettings.veryfast
+                    label.text: "Use veryfast compression."
+                }
+                Comm.ALG_ComboBox {
+                    width: compressSettingLayout.width
+                    box.currentIndex: AppSettings.blockSize
+                    box.model: ListModel {
+                        id: model
+                        ListElement { text: "4x4"   }
+                        ListElement { text: "5x5"   }
+                        ListElement { text: "6x6"   }
+                        ListElement { text: "8x6"   }
+                        ListElement { text: "8x8"   }
+                        ListElement { text: "10x8"  }
+                        ListElement { text: "10x10" }
+                        ListElement { text: "10x12" }
+                        ListElement { text: "12x12" }
                     }
+                    label.text: "Block size:"
+                    box.onActivated: AppSettings.blockSize = index
                 }
             }
         }
@@ -96,12 +106,18 @@ Item {
                     slider {
                         from: QmlEvents.QML_DEBUG
                         to: QmlEvents.QML_FATAL
-                        value: AppSettings.logLevel
                         live: false
                         snapMode: Slider.SnapAlways
                     }
                     onValueChanged: AppSettings.logLevel = value
                     aliasedString: [ "DEBUG", "INFO", "WARN", "FATAL" ]
+                    Component.onCompleted: slider.value = AppSettings.logLevel
+                }
+                Comm.ALG_CheckBox {
+                    width: appSettingsLayout.width
+                    box.checkState: AppSettings.showOutput ? Qt.Checked : Qt.Unchecked
+                    box.onClicked: AppSettings.showOutput = !AppSettings.showOutput
+                    label.text: "Auto open output directory."
                 }
             }
         }
@@ -116,7 +132,7 @@ Item {
         }
 
         width: root.width - 2 * GUI.globalMargins
-        height: (root.height - 3 * GUI.globalMargins) / 3
-        frameText.text: "About"
+        height: (root.height - 3 * GUI.globalMargins) / 2
+        frameText.text: "Deploy"
     }
 }

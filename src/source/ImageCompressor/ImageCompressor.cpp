@@ -9,6 +9,8 @@
 #include <QThread>
 #include <lz4.h>
 
+QStringList blockAvailable = {"4x4", "5x5", "6x6", "8x6", "8x8", "10x8", "10x10", "10x12", "12x12"};
+
 ImageCompressor::ImageCompressor(const QString &pngFileName)
     : m_pngFileName     { pngFileName }
     , m_isTerminated    { false }
@@ -188,7 +190,8 @@ process_flow_ctrl ImageCompressor::convert_normalized_png_to_premult_bmp()
                                      << QLatin1String("multiply")
                                      << QLatin1String("-composite")
                                      << m_premultBmpPath;
-    DEBUG << "Running" << IMAGE_MAGICK << "with" << args;
+    MODEL.printQmlLog(Events::QML_DEBUG, IMAGE_MAGICK);
+    MODEL.printQmlLog(Events::QML_DEBUG, args);
     if (!checkProcessExecutable(IMAGE_MAGICK))
         return p_failure;
 
@@ -265,14 +268,14 @@ process_flow_ctrl ImageCompressor::runAstcEncoder()
         const QStringList args = QStringList() << QString("-c")
                                                << m_normalizedPath
                                                << m_astcPath
-                                               << QString("4x4")
+                                               << blockAvailable.at(SETTINGS.blockSize())
                                                << speed
                                                << QString("-silentmode");
 
         if (!checkProcessExecutable(ASTCENCODER))
             return p_failure;
-
-        DEBUG << "Running" << ASTCENCODER << "with arguments" << args;
+        MODEL.printQmlLog(Events::QML_DEBUG, ASTCENCODER);
+        MODEL.printQmlLog(Events::QML_DEBUG, args);
         m_process.start(ASTCENCODER, args);
 
         if (!waitProcess())

@@ -37,6 +37,19 @@ public:
     };
     Q_ENUM(ButtonState)
 
+    enum BlockSize {
+        BLK_4x4 = 0,
+        BLK_5x5,
+        BLK_6x6,
+        BLK_8x6,
+        BLK_8x8,
+        BLK_10x8,
+        BLK_10x10,
+        BLK_10x12,
+        BLK_12x12,
+    };
+    Q_ENUM(BlockSize)
+
     explicit Events(QObject *parent = nullptr);
 
 public slots:

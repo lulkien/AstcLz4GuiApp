@@ -25,7 +25,8 @@ class GUIModel : public QObject
     Q_PROPERTY(QString  black               READ black              CONSTANT)
     Q_PROPERTY(QString  white               READ white              CONSTANT)
     Q_PROPERTY(QString  whitesmoke          READ whitesmoke         CONSTANT)
-    Q_PROPERTY(QString tomato               READ tomato             CONSTANT)
+    Q_PROPERTY(QString  tomato              READ tomato             CONSTANT)
+    Q_PROPERTY(QString  snow                READ snow               CONSTANT)
 
 public:
     static GUIModel &instance();
@@ -45,6 +46,7 @@ public:
     const QString &white() const            { return m_white; }
     const QString &whitesmoke() const       { return m_whitesmoke; }
     const QString &tomato() const           { return m_tomato; }
+    const QString &snow() const             { return m_snow; }
 
 private:
     GUIModel();
@@ -66,6 +68,7 @@ private:
     const QString   m_white;
     const QString   m_whitesmoke;
     const QString   m_tomato;
+    const QString   m_snow;
 };
 
 #endif // GUIMODEL_H

@@ -21,7 +21,6 @@ class ApplicationModel : public QObject
     Q_PROPERTY(int      totalFound          READ totalFound         WRITE setTotalFound         NOTIFY totalFoundChanged)
     Q_PROPERTY(int      successCount        READ successCount       WRITE setSuccessCount       NOTIFY successCountChanged)
     Q_PROPERTY(int      failureCount        READ failureCount       WRITE setFailureCount       NOTIFY failureCountChanged)
-    Q_PROPERTY(bool     isRunable           READ isRunable          WRITE setIsRunable          NOTIFY isRunableChanged)
 
     // for GUI
     Q_PROPERTY(int      currentTab          READ currentTab         WRITE setCurrentTab         NOTIFY currentTabChanged)
@@ -38,7 +37,6 @@ public:
     int successCount() const        { return m_successCount; }
     int failureCount() const        { return m_failureCount; }
     QStringList listFiles() const   { return m_listFiles; }
-    bool isRunable() const          { return m_isRunable; }
     int currentTab() const          { return m_currentTab; }
     int currentBtnState() const     { return m_currentBtnState; }
 
@@ -47,6 +45,7 @@ public:
     void setFile(const QString &filePath);
 
     void printQmlLog(Events::LogLevel level, QString logData);
+    void printQmlLog(Events::LogLevel level, QStringList listData);
     void printQmlLogSeparator();
     void clearQmlLog();
 
@@ -65,7 +64,6 @@ public slots:
     void setTotalFound(int totalFound);
     void setSuccessCount(int successCount);
     void setFailureCount(int failureCount);
-    void setIsRunable(bool isRunable);
     void setCurrentTab(int currentTab);
     void setCurrentBtnState(int currentBtnState);
 
@@ -82,7 +80,6 @@ signals:
     void successCountChanged(int successCount);
     void failureCountChanged(int failureCount);
     void currentTabChanged(int currentTab);
-    void isRunableChanged(bool isRunable);
 
     void reqPrintQmlLog(QString logData);
     void reqClearQmlLog();
@@ -98,7 +95,6 @@ private:
     int m_totalFound;
     int m_successCount;
     int m_failureCount;
-    bool m_isRunable;
     int m_currentTab;
 
     QStringList m_listFiles;

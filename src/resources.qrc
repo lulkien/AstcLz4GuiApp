@@ -17,6 +17,7 @@
         <file>qml/Screens/ALG_ScreenLoader.qml</file>
         <file>qml/Screens/ALG_SetupScreen.qml</file>
         <file>qml/main.qml</file>
+        <file>qml/Components/Common/ALG_ComboBox.qml</file>
     </qresource>
     <qresource prefix="/images">
         <file>resources/png/home.png</file>
@@ -38,5 +39,6 @@
         <file>resources/png/start.png</file>
         <file>resources/png/start_filled.png</file>
         <file>resources/png/stop.png</file>
+        <file>resources/png/check.png</file>
     </qresource>
 </RCC>

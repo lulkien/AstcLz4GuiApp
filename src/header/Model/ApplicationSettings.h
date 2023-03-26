@@ -13,36 +13,41 @@ class Settings : public QObject
     Q_PROPERTY(bool noPremult       READ noPremult      WRITE setNoPremult      NOTIFY noPremultChanged)
     Q_PROPERTY(bool useBackup       READ useBackup      WRITE setUseBackup      NOTIFY useBackupChanged)
     Q_PROPERTY(bool veryfast        READ veryfast       WRITE setVeryfast       NOTIFY veryfastChanged)
+    Q_PROPERTY(int  blockSize       READ blockSize      WRITE setBlockSize      NOTIFY blockSizeChanged)
 
     // app setting
     Q_PROPERTY(int  logLevel        READ logLevel       WRITE setLogLevel       NOTIFY logLevelChanged)
-    Q_PROPERTY(bool clearBackup     READ clearBackup    WRITE setClearBackup    NOTIFY clearBackupChanged)
+    Q_PROPERTY(bool showOutput      READ showOutput     WRITE setShowOutput     NOTIFY showOutputChanged)
 
 public:
     static Settings& instance();
+    bool loadConfigFile();
+    bool createDefaultConfigFile();
+    void saveConfigFile();
 
-    bool noFlip() const;
+    const bool &noFlip() const;
     void setNoFlip(bool newNoFlip);
 
-    bool noPremult() const;
+    const bool &noPremult() const;
     void setNoPremult(bool newNoPremult);
 
-    bool useBackup() const;
+    const bool &useBackup() const;
     void setUseBackup(bool newUseBackup);
 
-    bool veryfast() const;
+    const bool &veryfast() const;
     void setVeryfast(bool newVeryfast);
 
-    int logLevel() const;
+    const int &blockSize() const;
+    void setBlockSize(int newBlockSize);
+
+    const int &logLevel() const;
     void setLogLevel(int newLogLevel);
 
-    bool clearBackup() const;
-    void setClearBackup(bool newClearBackup);
+    const bool &showOutput() const;
+    void setShowOutput(bool newShowOutput);
 
 private:
     Settings();
-
-public slots:
 
 signals:
     void noFlipChanged();
@@ -50,15 +55,17 @@ signals:
     void useBackupChanged();
     void veryfastChanged();
     void logLevelChanged();
-    void clearBackupChanged();
+    void showOutputChanged();
+    void blockSizeChanged();
 
 private:
     bool m_noFlip;
     bool m_noPremult;
     bool m_useBackup;
     bool m_veryfast;
-    int m_logLevel;
-    bool m_clearBackup;
+    int  m_logLevel;
+    bool m_showOutput;
+    int  m_blockSize;
 };
 
 #endif // APPLICATIONSETTINGS_H

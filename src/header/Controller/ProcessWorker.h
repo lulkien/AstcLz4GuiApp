@@ -14,6 +14,9 @@ public slots:
     void onStartProcessImages();
 
 private:
+    bool preProcess();
+    void postProcess();
+
     bool createOutputDirectory();
     bool makeTempDir(const QString &tmpDir);
     bool makeResultDir(const QString &resultDir);

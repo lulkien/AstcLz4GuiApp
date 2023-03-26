@@ -3,8 +3,10 @@
 #include "ApplicationModel.h"
 #include "ApplicationSettings.h"
 #include "ImageCompressor.h"
+#include <QDesktopServices>
 #include <QDir>
 #include <QDirIterator>
+#include <QUrl>
 
 ProcessWorker::ProcessWorker()
 {}
@@ -14,44 +16,97 @@ void ProcessWorker::startProcessImages()
     DEBUG << "Use another thread to compress";
     MODEL.setSuccessCount(0);
     MODEL.setFailureCount(0);
-    MODEL.setIsProcessing(true);
 
-    if (MODEL.totalFound() != 0)
+    if (!preProcess())
+        return;
+
+    // start process
+    MODEL.setIsProcessing(true);
+    if (MODEL.isDirectory() && !createOutputDirectory())
     {
-        if (MODEL.isDirectory() && !createOutputDirectory())
+        MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Cannot make destination directory."));
+        MODEL.setIsProcessing(false);
+        return;
+    }
+
+    DEBUG << "Start process" << MODEL.totalFound() << "images...";
+    for (QString file : MODEL.listFiles())
+    {
+        ImageCompressor process(file);
+        bool result = process.compress();
+        if (result)
+            MODEL.setSuccessCount(MODEL.successCount() + 1);
+        else
+            MODEL.setFailureCount(MODEL.failureCount() + 1);
+        if (process.isTerminated())
         {
-            MODEL.printQmlLog(Events::QML_FATAL, QLatin1String("Cannot make destination directory."));
+            STDL << "Worker has been terminated";
+            removeTempFiles();
             MODEL.setIsProcessing(false);
             return;
         }
-
-        DEBUG << "Start process" << MODEL.totalFound() << "images...";
-        for (QString file : MODEL.listFiles())
-        {
-            ImageCompressor process(file);
-            bool result = process.compress();
-            if (result)
-                MODEL.setSuccessCount(MODEL.successCount() + 1);
-            else
-                MODEL.setFailureCount(MODEL.failureCount() + 1);
-            if (process.isTerminated())
-            {
-                STDL << "Worker has been terminated";
-                removeTempFiles();
-                MODEL.setIsProcessing(false);
-                return;
-            }
-        }
-
-        removeTempFiles();
+    }
+    removeTempFiles();
+    if (MODEL.isDirectory())
+    {
+        STDL << "Output directory:" << MODEL.resultDir();
         MODEL.printQmlLog(Events::QML_WARN, QString("Output files directory: <b>%1</b>").arg(MODEL.resultDir()));
     }
+    else
+    {
+        QFileInfo info(MODEL.sourcePath());
+        MODEL.printQmlLog(Events::QML_WARN, QString("Output files directory: <b>%1</b>").arg(info.absolutePath()));
+    }
     MODEL.setIsProcessing(false);
+    postProcess();
+    return;
 }
 
 void ProcessWorker::onStartProcessImages()
 {
     startProcessImages();
+}
+
+bool ProcessWorker::preProcess()
+{
+    if (MODEL.totalFound() == 0)
+        return false;
+
+    // check tool is executable
+    QFileInfo info;
+    info.setFile(IMAGE_MAGICK);
+    if (!info.isExecutable())
+    {
+        MODEL.printQmlLog(Events::QML_FATAL, QString("%1 is not executable.").arg(IMAGE_MAGICK));
+        return false;
+    }
+
+    info.setFile(ASTCENCODER);
+    if (!info.isExecutable())
+    {
+        MODEL.printQmlLog(Events::QML_FATAL, QString("%1 is not executable.").arg(ASTCENCODER));
+        return false;
+    }
+
+    return true;
+}
+
+void ProcessWorker::postProcess()
+{
+    if (!SETTINGS.showOutput())
+        return;
+
+    if (MODEL.isDirectory())
+    {
+        STDL << "Output directory:" << MODEL.resultDir();
+        QDesktopServices::openUrl(QUrl::fromLocalFile(MODEL.resultDir()));
+    }
+    else
+    {
+        QFileInfo info(MODEL.sourcePath());
+        STDL << "Output directory:" << info.absolutePath();
+        QDesktopServices::openUrl(QUrl::fromLocalFile(info.absolutePath()));
+    }
 }
 
 bool ProcessWorker::createOutputDirectory()
