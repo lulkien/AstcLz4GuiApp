@@ -27,7 +27,6 @@ Rectangle {
 
     width: 100
     height: 100
-    clip: true
 
     ALG_Text {
         id: textBtn
@@ -37,7 +36,7 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
         font.pixelSize: 20
         font.bold: true
-        color: root.isEnabled ? GUI.invisible : GUI.gray
+        color: root.isEnabled ? GUI.black : GUI.gray
     }
 
     Image {

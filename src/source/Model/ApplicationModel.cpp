@@ -5,6 +5,7 @@
 
 #include <QDateTime>
 #include <QFileInfo>
+#include <QQmlEngine>
 #include <QTime>
 
 #define MAX_IMAGE_ALLOW 500
@@ -193,4 +194,5 @@ ApplicationModel::ApplicationModel()
     , m_currentBtnState { static_cast<int>(Events::BROWSE) }
 {
     m_listFiles.clear();
+    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }

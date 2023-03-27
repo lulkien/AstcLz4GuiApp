@@ -107,6 +107,7 @@ void ProcessWorker::postProcess()
         STDL << "Output directory:" << info.absolutePath();
         QDesktopServices::openUrl(QUrl::fromLocalFile(info.absolutePath()));
     }
+    copyResultViaSSH();
 }
 
 bool ProcessWorker::createOutputDirectory()
@@ -208,5 +209,21 @@ void ProcessWorker::removeTempFiles()
     {
         MODEL.printQmlLog(Events::QML_WARN, QString("Remove temporary files directory: <b>%1</b>").arg(MODEL.backupDir()));
         QDir(MODEL.backupDir()).removeRecursively();
+    }
+}
+
+void ProcessWorker::copyResultViaSSH()
+{
+    if (!MODEL.isDirectory() || !SETTINGS.ipValidated() || SETTINGS.scpPaths().isEmpty())
+        return;
+    INFO;
+    QProcess process;
+    for (QString path : SETTINGS.scpPaths())
+    {
+        QStringList args = QStringList() << QLatin1String("-r")
+                                         << QLatin1String("*")
+                                         << QString("%1@%2:%3").arg(SETTINGS.user(), SETTINGS.host(), path);
+        process.start("scp", args);
+        process.waitForFinished(30000);
     }
 }

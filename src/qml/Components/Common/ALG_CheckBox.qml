@@ -5,7 +5,6 @@ Item {
     id: root
     property alias box: checkBox
     property alias label: text
-    clip: true
     height: GUI.globalBarHeight
     Row {
         anchors.fill: parent

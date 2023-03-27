@@ -5,6 +5,7 @@
 #include <QSettings>
 #include <QHash>
 #include <QDir>
+#include <QQmlEngine>
 
 #define getBoolStringValue(table, key)  (table.value(key, "no") == "yes")
 #define getIntStringValue(table, key)   (table.value(key, "0").toInt())
@@ -135,8 +136,9 @@ Settings::Settings()
     , m_veryfast        { false }
     , m_logLevel        { static_cast<int>(Events::QML_WARN) }
     , m_showOutput      {  true }
+    , m_ipValidated     { false }
 {
-
+    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
 const bool &Settings::noFlip() const
@@ -146,8 +148,6 @@ const bool &Settings::noFlip() const
 
 void Settings::setNoFlip(bool newNoFlip)
 {
-    if (m_noFlip == newNoFlip)
-        return;
     m_noFlip = newNoFlip;
     emit noFlipChanged();
 }
@@ -159,8 +159,6 @@ const bool &Settings::noPremult() const
 
 void Settings::setNoPremult(bool newNoPremult)
 {
-    if (m_noPremult == newNoPremult)
-        return;
     m_noPremult = newNoPremult;
     emit noPremultChanged();
 }
@@ -172,8 +170,6 @@ const bool &Settings::useBackup() const
 
 void Settings::setUseBackup(bool newUseBackup)
 {
-    if (m_useBackup == newUseBackup)
-        return;
     m_useBackup = newUseBackup;
     emit useBackupChanged();
 }
@@ -185,8 +181,6 @@ const bool &Settings::veryfast() const
 
 void Settings::setVeryfast(bool newVeryfast)
 {
-    if (m_veryfast == newVeryfast)
-        return;
     m_veryfast = newVeryfast;
     emit veryfastChanged();
 }
@@ -198,8 +192,6 @@ const int &Settings::logLevel() const
 
 void Settings::setLogLevel(int newLogLevel)
 {
-    if (m_logLevel == newLogLevel)
-        return;
     m_logLevel = newLogLevel;
     emit logLevelChanged();
 }
@@ -211,9 +203,6 @@ const bool &Settings::showOutput() const
 
 void Settings::setShowOutput(bool newShowOutput)
 {
-    if (m_showOutput == newShowOutput)
-        return;
-
     m_showOutput = newShowOutput;
     emit showOutputChanged();
 }
@@ -230,4 +219,59 @@ void Settings::setBlockSize(int newBlockSize)
         return;
     m_blockSize = newBlockSize;
     emit blockSizeChanged();
+}
+
+bool Settings::ipValidated() const
+{
+    return m_ipValidated;
+}
+
+void Settings::setIpValidated(bool newIpValidated)
+{
+    m_ipValidated = newIpValidated;
+    emit ipValidatedChanged();
+}
+
+const QStringList &Settings::scpPaths() const
+{
+    return m_scpPaths;
+}
+
+bool Settings::addScpPath(const QString &path)
+{
+    if (m_scpPaths.contains(path))
+        return false;
+    m_scpPaths.append(path);
+    return true;
+}
+
+void Settings::clsScpPaths()
+{
+    m_scpPaths.clear();
+}
+
+const QString &Settings::user() const
+{
+    return m_user;
+}
+
+void Settings::setUser(const QString &newUser)
+{
+    if (m_user == newUser)
+        return;
+    m_user = newUser;
+    emit userChanged();
+}
+
+const QString &Settings::host() const
+{
+    return m_host;
+}
+
+void Settings::setHost(const QString &newHost)
+{
+    if (m_host == newHost)
+        return;
+    m_host = newHost;
+    emit hostChanged();
 }

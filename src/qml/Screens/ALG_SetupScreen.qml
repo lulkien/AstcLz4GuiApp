@@ -134,5 +134,104 @@ Item {
         width: root.width - 2 * GUI.globalMargins
         height: (root.height - 3 * GUI.globalMargins) / 2
         frameText.text: "Deploy"
+
+        Rectangle {
+            width: 1
+            height: parent.height - GUI.globalMargins * 2
+            anchors.centerIn: parent
+            color: GUI.black
+        }
+
+        Comp.ALG_HostInput {
+            id: hostinput
+            width: parent.width / 2 - 2 * GUI.globalMargins
+            anchors {
+                top: parent.top
+                left: parent.left
+                margins: GUI.globalMargins
+            }
+            onIpValidatedChanged: {
+                AppSettings.ipValidated = ipValidated
+                AppSettings.user = username
+                AppSettings.host = hostname
+            }
+        }
+
+        Comm.ALG_TextField {
+            id: pathField
+            anchors {
+                top: hostinput.bottom
+                left: parent.left
+                margins: GUI.globalMargins
+            }
+            width: hostinput.width - (GUI.globalBarHeight + GUI.globalMargins / 2) * 2
+            height: GUI.globalBarHeight
+        }
+
+        Comp.ALG_Button {
+            id: addBtn
+            width: GUI.globalBarHeight
+            height: GUI.globalBarHeight
+            enableTooltip: false
+            anchors {
+                left: pathField.right
+                verticalCenter: pathField.verticalCenter
+                margins: GUI.globalMargins / 2
+            }
+            border.width: 1
+            label {
+                font.bold: false
+                font.pixelSize: 12
+                text : "ADD"
+            }
+            onClicked: {
+                if (AppSettings.addScpPath(pathField.text)) {
+                    scpModel.append({ _data: pathField.text })
+                }
+            }
+        }
+
+        Comp.ALG_Button {
+            id: clsBtn
+            width: GUI.globalBarHeight
+            height: GUI.globalBarHeight
+            enableTooltip: false
+            anchors {
+                left: addBtn.right
+                verticalCenter: pathField.verticalCenter
+                margins: GUI.globalMargins / 2
+            }
+            border.width: 1
+            label {
+                font.bold: false
+                font.pixelSize: 12
+                text : "CLS"
+            }
+            onClicked: {
+                pathField.text = ""
+                AppSettings.clsScpPaths()
+                scpModel.clear()
+            }
+        }
+
+        ListModel {
+            id: scpModel
+        }
+
+        ListView {
+            id: listScpPaths
+            width: hostinput.width
+            height: parent.height - 4 * GUI.globalMargins - 2*GUI.globalBarHeight
+            model: scpModel
+            anchors {
+                bottom: parent.bottom
+                left: parent.left
+                margins: GUI.globalMargins
+            }
+            delegate: Comm.ALG_Text {
+                text: _data
+            }
+        }
+
     }
 }

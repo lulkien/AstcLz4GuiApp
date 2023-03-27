@@ -7,8 +7,8 @@ GUIModel &GUIModel::instance()
 }
 
 GUIModel::GUIModel()
-    : m_defaultWidth        { 800 }
-    , m_defaultHeight       { 600 }
+    : m_defaultWidth        { 1280 }
+    , m_defaultHeight       { 720 }
     , m_globalMargin        { 20 }
     , m_globalButtonSize    { 100 }
     , m_globalBarHeight     { 35 }

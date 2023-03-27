@@ -22,6 +22,9 @@ private:
     bool makeResultDir(const QString &resultDir);
     void removeTempFiles();
 
+    // copy
+    void copyResultViaSSH();
+
 signals:
 
 };

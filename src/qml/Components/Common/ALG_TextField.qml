@@ -7,4 +7,5 @@ TextField {
         color: GUI.whitesmoke
         border.color: GUI.black
     }
+    verticalAlignment: TextInput.AlignVCenter
 }

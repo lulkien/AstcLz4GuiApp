@@ -18,6 +18,7 @@
         <file>qml/Screens/ALG_SetupScreen.qml</file>
         <file>qml/main.qml</file>
         <file>qml/Components/Common/ALG_ComboBox.qml</file>
+        <file>qml/Components/ALG_HostInput.qml</file>
     </qresource>
     <qresource prefix="/images">
         <file>resources/png/home.png</file>
